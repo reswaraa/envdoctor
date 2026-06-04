@@ -55,6 +55,8 @@ type System struct {
 // Severity is how serious a finding is.
 type Severity string
 
+// Severity values emitted in JSON output. Their string values are part
+// of the canonical schema and cannot be renamed (see SchemaVersion).
 const (
 	SeverityError   Severity = "error"
 	SeverityWarning Severity = "warning"
@@ -64,6 +66,8 @@ const (
 // Status is the outcome of running a probe.
 type Status string
 
+// Status values emitted in JSON output. Their string values are part of
+// the canonical schema and cannot be renamed (see SchemaVersion).
 const (
 	StatusOK          Status = "ok"
 	StatusFail        Status = "fail"

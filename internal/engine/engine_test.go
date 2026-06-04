@@ -24,8 +24,8 @@ type okProbe struct {
 	ranCount *int32
 }
 
-func (o *okProbe) ID() string                       { return o.id }
-func (o *okProbe) AppliesTo(_ probes.Input) bool    { return true }
+func (o *okProbe) ID() string                    { return o.id }
+func (o *okProbe) AppliesTo(_ probes.Input) bool { return true }
 func (o *okProbe) Run(_ context.Context, _ probes.Input) ([]output.Finding, error) {
 	if o.ranCount != nil {
 		atomic.AddInt32(o.ranCount, 1)

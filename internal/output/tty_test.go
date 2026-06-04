@@ -12,12 +12,12 @@ import (
 
 func TestWantColor_Precedence(t *testing.T) {
 	cases := []struct {
-		name      string
-		noColor   string
+		name       string
+		noColor    string
 		forceColor string
-		ci        string
-		tty       bool
-		want      bool
+		ci         string
+		tty        bool
+		want       bool
 	}{
 		{"noColor wins over force", "1", "1", "", true, false},
 		{"noColor wins over tty", "1", "", "", true, false},
@@ -111,7 +111,7 @@ func TestRender_GroupsByCategory(t *testing.T) {
 	if dockerAt < 0 || portsAt < 0 || runtimeAt < 0 {
 		t.Fatalf("missing category headers:\n%s", out)
 	}
-	if !(dockerAt < portsAt && portsAt < runtimeAt) {
+	if dockerAt >= portsAt || portsAt >= runtimeAt {
 		t.Errorf("categories not alphabetical: docker=%d ports=%d runtime=%d", dockerAt, portsAt, runtimeAt)
 	}
 }
