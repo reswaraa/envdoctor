@@ -1,0 +1,57 @@
+version: 2
+
+project_name: envdoctor
+
+before:
+  hooks:
+    - go mod tidy
+
+builds:
+  - id: envdoctor
+    main: ./cmd/envdoctor
+    binary: envdoctor
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - darwin
+      - linux
+    goarch:
+      - amd64
+      - arm64
+    flags:
+      - -trimpath
+    ldflags:
+      - -s -w
+      - -X github.com/reswaraa/envdoctor/internal/cli.Version={{.Version}}
+      - -X github.com/reswaraa/envdoctor/internal/cli.Commit={{.Commit}}
+      - -X github.com/reswaraa/envdoctor/internal/cli.Date={{.Date}}
+
+archives:
+  - id: envdoctor
+    name_template: "envdoctor_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    formats: [tar.gz]
+    files:
+      - LICENSE
+      - README.md
+      - CHANGELOG.md
+
+checksum:
+  name_template: "sha256sums.txt"
+  algorithm: sha256
+
+snapshot:
+  version_template: "{{ incpatch .Version }}-snapshot"
+
+changelog:
+  use: github
+  sort: asc
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
+      - "^chore:"
+
+release:
+  draft: false
+  prerelease: auto
+  name_template: "v{{.Version}}"
