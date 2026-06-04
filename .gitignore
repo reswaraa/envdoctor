@@ -1,0 +1,37 @@
+# Build output
+/dist/
+/bin/
+envdoctor
+envdoctor.exe
+
+# Test artifacts
+*.test
+*.out
+coverage.txt
+coverage.html
+
+# Bundle outputs (users run scan --bundle and we should never commit them)
+envdoctor-bundle.json
+*-envdoctor-bundle.json
+
+# Editor / OS
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*~
+
+# Local config
+.env
+.env.local
+
+# Docs site build
+/docs/.astro/
+/docs/dist/
+/docs/node_modules/
+
+# Go workspace files (we use modules)
+go.work
+go.work.sum
+
+.claude/
