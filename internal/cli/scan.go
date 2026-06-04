@@ -20,11 +20,11 @@ commands.
 Stub in Phase 0; the engine, probes, and output renderer are wired in
 Phase 1.`,
 		RunE: func(cmd *cobra.Command, _ []string) error {
-			fmt.Fprintln(
+			_, err := fmt.Fprintln(
 				cmd.OutOrStderr(),
 				"envdoctor scan: stub (Phase 1 wires the engine and probes).",
 			)
-			return nil
+			return err
 		},
 	}
 }

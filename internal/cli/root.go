@@ -1,6 +1,7 @@
 // Copyright 2026 The EnvDoctor Authors
 // SPDX-License-Identifier: Apache-2.0
 
+// Package cli wires the cobra command tree for the envdoctor CLI.
 package cli
 
 import (
