@@ -34,12 +34,19 @@ repo requirements (.nvmrc, package.json, docker-compose.yml, pyproject.toml,
 }
 
 // Execute runs the root command and returns the process exit code.
-// Phase 0 maps any error to exit code 3 (envdoctor itself crashed). The
-// full exit-code matrix from implementation.md Q10 is wired in Phase 1.
+// Errors carrying an ExitCoder use its code; anything else is treated
+// as ExitCrashed and its message goes to stderr.
 func Execute() int {
-	if err := newRootCmd().Execute(); err != nil {
-		fmt.Fprintln(os.Stderr, "envdoctor:", err)
-		return 3
+	err := newRootCmd().Execute()
+	if err == nil {
+		return ExitOK
 	}
-	return 0
+	if code, ok := asExitCode(err); ok {
+		if msg := err.Error(); msg != "" {
+			fmt.Fprintln(os.Stderr, "envdoctor:", msg)
+		}
+		return code
+	}
+	fmt.Fprintln(os.Stderr, "envdoctor:", err)
+	return ExitCrashed
 }
