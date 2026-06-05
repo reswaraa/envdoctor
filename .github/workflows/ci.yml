@@ -45,3 +45,42 @@ jobs:
       - uses: golangci/golangci-lint-action@v8
         with:
           version: latest
+
+  recipe-contract:
+    name: recipe contract
+    runs-on: ubuntu-latest
+    # The harness builds linux-fresh, linux-mise, linux-fnm, linux-asdf
+    # then runs each library Fix in a fresh container per the Test
+    # schema. linux-nvm and darwin-brew Fixes are skipped (see
+    # testdata/containers/README.md).
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Cache test container layers
+        uses: actions/cache@v4
+        with:
+          path: /tmp/.buildx-cache
+          key: containers-${{ hashFiles('testdata/containers/*.Dockerfile') }}
+          restore-keys: containers-
+      - name: Build test container fixtures
+        run: |
+          for f in testdata/containers/*.Dockerfile; do
+            name=$(basename "$f" .Dockerfile)
+            docker buildx build \
+              --file "$f" \
+              --tag "envdoctor/test-$name:latest" \
+              --cache-from type=local,src=/tmp/.buildx-cache \
+              --cache-to   type=local,dest=/tmp/.buildx-cache-new,mode=max \
+              --load \
+              .
+          done
+          # Atomic swap so the cache doesn't grow unbounded.
+          rm -rf /tmp/.buildx-cache
+          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+      - name: Run recipe contract harness
+        run: go run ./scripts/recipe-test -v
