@@ -1,0 +1,84 @@
+id: node-version-mismatch
+probe: node-version
+
+# Fixes are evaluated top-to-bottom. The first non-fallback Fix whose
+# `when:` clause matches the user's system wins; if none match, the
+# first fallback Fix that matches wins. Brew is the fallback because it
+# touches global state (class: shared), while mise/fnm/nvm/asdf install
+# Node into a tool-local directory (class: safe).
+
+fixes:
+  - id: mise-install-node
+    class: safe
+    when: { has_tool: mise }
+    label: "Install Node {{.Required}} via mise"
+    command: "mise install node@{{.Required}} && mise use node@{{.Required}}"
+    test:
+      image: envdoctor/test-linux-mise:latest
+      params: { Required: "20.10.0" }
+      before:
+        check: "! node --version 2>/dev/null | grep -q '^v20.10.0'"
+      after:
+        check: "node --version | grep -q '^v20.10.0'"
+        idempotent: true
+
+  - id: fnm-install-node
+    class: safe
+    when: { has_tool: fnm }
+    label: "Install Node {{.Required}} via fnm"
+    command: "fnm install {{.Required}} && fnm use {{.Required}}"
+    test:
+      image: envdoctor/test-linux-fnm:latest
+      params: { Required: "20.10.0" }
+      before:
+        check: "! node --version 2>/dev/null | grep -q '^v20.10.0'"
+      after:
+        check: "node --version | grep -q '^v20.10.0'"
+        idempotent: true
+
+  - id: nvm-install-node
+    class: safe
+    when: { has_tool: nvm }
+    label: "Install Node {{.Required}} via nvm"
+    # nvm is a shell function in most installations rather than an
+    # executable on PATH, so has_tool: nvm will usually be false. This
+    # Fix is kept for the (rare) cases where nvm is installed as a
+    # binary, and documents the intended invocation otherwise.
+    command: "nvm install {{.Required}} && nvm use {{.Required}}"
+    test:
+      image: envdoctor/test-linux-nvm:latest
+      params: { Required: "20.10.0" }
+      before:
+        check: "! node --version 2>/dev/null | grep -q '^v20.10.0'"
+      after:
+        check: "node --version | grep -q '^v20.10.0'"
+        idempotent: true
+
+  - id: asdf-install-node
+    class: safe
+    when: { has_tool: asdf }
+    label: "Install Node {{.Required}} via asdf"
+    command: "asdf install nodejs {{.Required}} && asdf local nodejs {{.Required}}"
+    test:
+      image: envdoctor/test-linux-asdf:latest
+      params: { Required: "20.10.0" }
+      before:
+        check: "! node --version 2>/dev/null | grep -q '^v20.10.0'"
+      after:
+        check: "node --version | grep -q '^v20.10.0'"
+        idempotent: true
+
+  - id: brew-install-node
+    class: shared
+    when: { has_tool: brew }
+    label: "Install node@{{.MajorVersion}} via Homebrew"
+    command: "brew install node@{{.MajorVersion}}"
+    fallback: true
+    test:
+      image: envdoctor/test-darwin-brew:latest
+      params: { MajorVersion: "20" }
+      before:
+        check: "! brew list node@20 >/dev/null 2>&1"
+      after:
+        check: "brew list node@20 >/dev/null 2>&1"
+        idempotent: true
