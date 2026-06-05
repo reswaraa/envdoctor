@@ -1,0 +1,19 @@
+id: env-missing
+probe: env-required
+
+# A single safe fix: copy .env.example to .env. The user still has to
+# fill in real values. cp -n is no-clobber so the recipe is idempotent
+# even if the user already created a partial .env.
+
+fixes:
+  - id: copy-env-example
+    class: safe
+    label: "Copy .env.example to .env (then edit values)"
+    command: "cp -n .env.example .env"
+    test:
+      image: envdoctor/test-linux-fresh:latest
+      before:
+        check: "test -f .env.example && ! test -f .env"
+      after:
+        check: "test -f .env"
+        idempotent: true
