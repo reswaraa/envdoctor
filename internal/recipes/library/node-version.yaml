@@ -26,10 +26,12 @@ fixes:
     class: safe
     when: { has_tool: fnm }
     label: "Install Node {{.Required}} via fnm"
-    # eval $(fnm env) populates FNM_MULTISHELL_PATH so `fnm use` can swap
-    # the active version. Without it (i.e. the user has not added the
-    # eval line to their shell rc) `fnm use` errors out.
-    command: 'eval "$(fnm env)" && fnm install {{.Required}} && fnm use {{.Required}}'
+    # eval $(fnm env --shell bash) populates FNM_MULTISHELL_PATH so
+    # `fnm use` can swap the active version. --shell bash is required
+    # when fnm can't infer the parent shell (e.g. `bash -c`, CI runners,
+    # process-detached invocations). Bash-style `export` lines also
+    # evaluate correctly in zsh, so this form is safe for both.
+    command: 'eval "$(fnm env --shell bash)" && fnm install {{.Required}} && fnm use {{.Required}}'
     test:
       image: envdoctor/test-linux-fnm:latest
       params: { Required: "20.10.0" }
