@@ -26,7 +26,10 @@ fixes:
     class: safe
     when: { has_tool: fnm }
     label: "Install Node {{.Required}} via fnm"
-    command: "fnm install {{.Required}} && fnm use {{.Required}}"
+    # eval $(fnm env) populates FNM_MULTISHELL_PATH so `fnm use` can swap
+    # the active version. Without it (i.e. the user has not added the
+    # eval line to their shell rc) `fnm use` errors out.
+    command: 'eval "$(fnm env)" && fnm install {{.Required}} && fnm use {{.Required}}'
     test:
       image: envdoctor/test-linux-fnm:latest
       params: { Required: "20.10.0" }
@@ -58,7 +61,9 @@ fixes:
     class: safe
     when: { has_tool: asdf }
     label: "Install Node {{.Required}} via asdf"
-    command: "asdf install nodejs {{.Required}} && asdf local nodejs {{.Required}}"
+    # `asdf plugin add nodejs` is idempotent in spirit (errors when the
+    # plugin already exists); `|| true` neutralizes that under `set -e`.
+    command: 'asdf plugin add nodejs >/dev/null 2>&1 || true; asdf install nodejs {{.Required}} && asdf local nodejs {{.Required}}'
     test:
       image: envdoctor/test-linux-asdf:latest
       params: { Required: "20.10.0" }
