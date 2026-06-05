@@ -55,9 +55,16 @@ func Collect() *Facts {
 
 // HasTool reports whether the named executable is on PATH. The result is
 // cached per Facts; repeated lookups across probes are O(1).
+//
+// Safe to call on a zero-or-partially-initialized Facts: the cache is
+// lazy-init under the mutex, so &Facts{OS:"linux"} works without going
+// through Collect.
 func (f *Facts) HasTool(name string) bool {
 	f.mu.Lock()
 	defer f.mu.Unlock()
+	if f.toolCache == nil {
+		f.toolCache = make(map[string]bool)
+	}
 	if v, ok := f.toolCache[name]; ok {
 		return v
 	}
