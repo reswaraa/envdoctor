@@ -12,8 +12,11 @@ fixes:
     command: "cp -n .env.example .env"
     test:
       image: envdoctor/test-linux-fresh:latest
+      setup: |
+        printf 'DATABASE_URL=postgres://x\nJWT_SECRET=changeme\n' > .env.example
+        rm -f .env
       before:
         check: "test -f .env.example && ! test -f .env"
       after:
-        check: "test -f .env"
+        check: "test -f .env && grep -q '^DATABASE_URL=' .env"
         idempotent: true

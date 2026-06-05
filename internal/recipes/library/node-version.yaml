@@ -17,7 +17,7 @@ fixes:
       image: envdoctor/test-linux-mise:latest
       params: { Required: "20.10.0" }
       before:
-        check: "! node --version 2>/dev/null | grep -q '^v20.10.0'"
+        check: "node --version 2>/dev/null | grep -qv '^v20.10.0' || true"
       after:
         check: "node --version | grep -q '^v20.10.0'"
         idempotent: true
@@ -31,7 +31,7 @@ fixes:
       image: envdoctor/test-linux-fnm:latest
       params: { Required: "20.10.0" }
       before:
-        check: "! node --version 2>/dev/null | grep -q '^v20.10.0'"
+        check: "node --version 2>/dev/null | grep -qv '^v20.10.0' || true"
       after:
         check: "node --version | grep -q '^v20.10.0'"
         idempotent: true
@@ -49,7 +49,7 @@ fixes:
       image: envdoctor/test-linux-nvm:latest
       params: { Required: "20.10.0" }
       before:
-        check: "! node --version 2>/dev/null | grep -q '^v20.10.0'"
+        check: "node --version 2>/dev/null | grep -qv '^v20.10.0' || true"
       after:
         check: "node --version | grep -q '^v20.10.0'"
         idempotent: true
@@ -63,7 +63,7 @@ fixes:
       image: envdoctor/test-linux-asdf:latest
       params: { Required: "20.10.0" }
       before:
-        check: "! node --version 2>/dev/null | grep -q '^v20.10.0'"
+        check: "node --version 2>/dev/null | grep -qv '^v20.10.0' || true"
       after:
         check: "node --version | grep -q '^v20.10.0'"
         idempotent: true

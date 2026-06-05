@@ -58,8 +58,13 @@ type Match struct {
 // Test is the before/after fixture for the Phase 2C recipe contract
 // harness. Each Fix ships with one; CI runs the recipe twice in a
 // fresh container per Fix and asserts idempotence.
+//
+// Setup is an optional bash snippet run before before.check so the
+// recipe can stage the broken state (e.g. create a `.env.example`
+// or bind a port). Setup is not part of the Fix the user runs.
 type Test struct {
 	Image  string            `yaml:"image,omitempty"`
+	Setup  string            `yaml:"setup,omitempty"`
 	Before TestStep          `yaml:"before,omitempty"`
 	After  TestStep          `yaml:"after,omitempty"`
 	Params map[string]string `yaml:"params,omitempty"`

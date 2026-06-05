@@ -14,6 +14,11 @@ fixes:
     test:
       image: envdoctor/test-linux-fresh:latest
       params: { Port: "5432" }
+      setup: |
+        # Stage a process holding port 5432 so the Fix has something to kill.
+        # nc -l keeps the socket bound until killed; the & detaches it.
+        ( nc -l -p 5432 </dev/null >/dev/null 2>&1 & )
+        sleep 0.2
       before:
         check: "lsof -ti :5432 >/dev/null"
       after:
