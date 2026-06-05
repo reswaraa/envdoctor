@@ -1,0 +1,36 @@
+id: port-collision
+probe: port-free
+
+# Two fixes. The primary is destructive (kills the process holding the
+# port via lsof) and requires explicit consent under --fix even with
+# --yes. The fallback is informational, listing brew-managed services
+# so the user can decide whether to stop one rather than kill blindly.
+
+fixes:
+  - id: kill-port-holder
+    class: destructive
+    label: "Kill process holding port {{.Port}}"
+    command: "kill $(lsof -ti :{{.Port}})"
+    test:
+      image: envdoctor/test-linux-fresh:latest
+      params: { Port: "5432" }
+      before:
+        check: "lsof -ti :5432 >/dev/null"
+      after:
+        check: "! lsof -ti :5432 >/dev/null"
+        idempotent: false
+
+  - id: brew-services-list
+    class: shared
+    when: { has_tool: brew }
+    label: "List Homebrew services that may be holding port {{.Port}}"
+    command: "brew services list"
+    fallback: true
+    test:
+      image: envdoctor/test-darwin-brew:latest
+      params: { Port: "5432" }
+      before:
+        check: "command -v brew"
+      after:
+        check: "brew services list >/dev/null"
+        idempotent: true
