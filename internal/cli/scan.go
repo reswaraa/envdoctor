@@ -15,6 +15,7 @@ import (
 	"github.com/reswaraa/envdoctor/internal/engine"
 	"github.com/reswaraa/envdoctor/internal/output"
 	"github.com/reswaraa/envdoctor/internal/probes"
+	"github.com/reswaraa/envdoctor/internal/recipes"
 	"github.com/reswaraa/envdoctor/internal/system"
 )
 
@@ -32,10 +33,7 @@ func newScanCmd() *cobra.Command {
 		Short: "Scan the current repo for environment problems",
 		Long: `Scan inspects the current directory for known manifest files,
 probes the local system, and reports findings with copy-pasteable repair
-commands.
-
-Phase 1 wires the engine and output paths but ships no probes yet, so a
-scan returns a clean report. Probes land in Phase 2.`,
+commands.`,
 		RunE: func(cmd *cobra.Command, _ []string) error {
 			cwd, err := os.Getwd()
 			if err != nil {
@@ -74,7 +72,12 @@ func runScan(ctx context.Context, cwd string, f scanFlags) (*output.Report, erro
 	facts := system.Collect()
 	report := output.NewReport(Version, repoRoot, facts.AsSystem())
 
-	findings, _ := engine.New(nil).Run(ctx, probes.Input{
+	lib, err := recipes.DefaultLibrary()
+	if err != nil {
+		return nil, &exitErr{code: ExitCrashed, err: fmt.Errorf("load recipes: %w", err)}
+	}
+
+	findings, _ := engine.New(BuiltinProbes(lib)).Run(ctx, probes.Input{
 		RepoRoot: repoRoot,
 		System:   facts,
 	})
