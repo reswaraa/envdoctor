@@ -1,0 +1,37 @@
+id: python-version-mismatch
+probe: python-version
+
+fixes:
+  - id: mise-install-python
+    class: safe
+    when: { has_tool: mise }
+    label: "Install Python {{.Required}} via mise"
+    command: "mise install python@{{.Required}} && mise use python@{{.Required}}"
+    # mise's python plugin compiles from source on first install (needs
+    # ~15s + build deps in linux-mise). Harness skip is acceptable for
+    # MVP; manual validation on dev hosts.
+
+  - id: uv-install-python
+    class: safe
+    when: { has_tool: uv }
+    label: "Install Python {{.Required}} via uv"
+    command: "uv python install {{.Required}}"
+
+  - id: pyenv-install-python
+    class: safe
+    when: { has_tool: pyenv }
+    label: "Install Python {{.Required}} via pyenv"
+    command: "pyenv install {{.Required}} && pyenv local {{.Required}}"
+
+  - id: brew-install-python
+    class: shared
+    when: { has_tool: brew }
+    label: "Install Python {{.MajorVersion}} via Homebrew"
+    # Homebrew ships per-minor python (python@3.11, python@3.12, ...);
+    # MajorVersion is the major segment only — for "3.11.5" that's "3".
+    # The user typically wants brew install python@3.11 (major.minor).
+    # That's not derivable from a single template var without a probe
+    # change, so this fallback installs current python and notes the
+    # limitation in the label.
+    command: "brew install python"
+    fallback: true

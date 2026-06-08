@@ -21,6 +21,9 @@ import (
 func BuiltinProbes(lib *recipes.Library) []probes.Probe {
 	return []probes.Probe{
 		probes.NodeVersion(lib),
+		probes.PythonVersion(lib),
+		probes.GoVersion(lib),
+		probes.RubyVersion(lib),
 		probes.EnvRequired(lib),
 		probes.PortFree(lib),
 		probes.DockerRunning(lib),

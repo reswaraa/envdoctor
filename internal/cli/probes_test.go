@@ -18,15 +18,19 @@ func TestBuiltinProbes_ContainsExpectedIDs(t *testing.T) {
 		t.Fatalf("DefaultLibrary: %v", err)
 	}
 	ps := BuiltinProbes(lib)
-	if len(ps) != 6 {
-		t.Fatalf("expected 6 probes; got %d", len(ps))
+	if len(ps) != 9 {
+		t.Fatalf("expected 9 probes; got %d", len(ps))
 	}
 	ids := make([]string, 0, len(ps))
 	for _, p := range ps {
 		ids = append(ids, p.ID())
 	}
 	sort.Strings(ids)
-	want := []string{"arch-mismatch", "docker-running", "env-required", "node-version", "path-command", "port-free"}
+	want := []string{
+		"arch-mismatch", "docker-running", "env-required",
+		"go-version", "node-version", "path-command",
+		"port-free", "python-version", "ruby-version",
+	}
 	if !reflect.DeepEqual(ids, want) {
 		t.Errorf("probe IDs: got %v, want %v", ids, want)
 	}
@@ -34,8 +38,8 @@ func TestBuiltinProbes_ContainsExpectedIDs(t *testing.T) {
 
 func TestBuiltinProbes_NilLibAllowed(t *testing.T) {
 	ps := BuiltinProbes(nil)
-	if len(ps) != 6 {
-		t.Fatalf("expected 6 probes even with nil lib; got %d", len(ps))
+	if len(ps) != 9 {
+		t.Fatalf("expected 9 probes even with nil lib; got %d", len(ps))
 	}
 }
 

@@ -92,14 +92,17 @@ func InferNode(root string) ([]NodeRequirement, error) {
 }
 
 func readNVMRC(root string) (NodeRequirement, bool, error) {
-	return readSingleLineFile(root, ".nvmrc", true)
+	return readSingleLineFile(root, ".nvmrc")
 }
 
 func readNodeVersionFile(root string) (NodeRequirement, bool, error) {
-	return readSingleLineFile(root, ".node-version", true)
+	return readSingleLineFile(root, ".node-version")
 }
 
-func readSingleLineFile(root, name string, exact bool) (NodeRequirement, bool, error) {
+// readSingleLineFile is the shared one-line-version-file reader for
+// .nvmrc, .node-version, .python-version, .ruby-version. All these
+// files contain a single exact version string by convention.
+func readSingleLineFile(root, name string) (NodeRequirement, bool, error) {
 	p := filepath.Join(root, name)
 	b, err := os.ReadFile(p)
 	if err != nil {
@@ -112,7 +115,7 @@ func readSingleLineFile(root, name string, exact bool) (NodeRequirement, bool, e
 	if v == "" || strings.HasPrefix(v, "#") {
 		return NodeRequirement{}, false, nil
 	}
-	return NodeRequirement{Source: name, Constraint: v, IsExact: exact}, true, nil
+	return NodeRequirement{Source: name, Constraint: v, IsExact: true}, true, nil
 }
 
 func readToolVersionsNode(root string) (NodeRequirement, bool, error) {

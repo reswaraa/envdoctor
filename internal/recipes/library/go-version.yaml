@@ -1,0 +1,35 @@
+id: go-version-mismatch
+probe: go-version
+
+fixes:
+  - id: mise-install-go
+    class: safe
+    when: { has_tool: mise }
+    label: "Install Go {{.Required}} via mise"
+    command: "mise install go@{{.Required}} && mise use go@{{.Required}}"
+    test:
+      image: envdoctor/test-linux-mise:latest
+      params: { Required: "1.22.0", MajorVersion: "1" }
+      setup: |
+        mise install go@1.21.0 >/dev/null 2>&1
+        mise use go@1.21.0
+      before:
+        check: "go version | grep -q 'go1.21'"
+      after:
+        check: "go version | grep -q 'go1.22'"
+        idempotent: true
+
+  - id: asdf-install-go
+    class: safe
+    when: { has_tool: asdf }
+    label: "Install Go {{.Required}} via asdf"
+    command: "asdf plugin add golang >/dev/null 2>&1 || true; asdf install golang {{.Required}} && asdf local golang {{.Required}}"
+
+  - id: brew-install-go
+    class: shared
+    when: { has_tool: brew }
+    label: "Install Go via Homebrew"
+    # Homebrew only ships current go (no per-version formula like node@N);
+    # users who need a specific older version should use mise/asdf instead.
+    command: "brew install go"
+    fallback: true

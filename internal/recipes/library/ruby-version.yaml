@@ -1,0 +1,31 @@
+id: ruby-version-mismatch
+probe: ruby-version
+
+fixes:
+  - id: mise-install-ruby
+    class: safe
+    when: { has_tool: mise }
+    label: "Install Ruby {{.Required}} via mise"
+    command: "mise install ruby@{{.Required}} && mise use ruby@{{.Required}}"
+    # mise's ruby plugin requires build deps that aren't in linux-mise
+    # by default. The harness will SKIP via no-fixture or build failure;
+    # manual validation on a dev host with ruby-build deps installed.
+
+  - id: rbenv-install-ruby
+    class: safe
+    when: { has_tool: rbenv }
+    label: "Install Ruby {{.Required}} via rbenv"
+    command: "rbenv install {{.Required}} && rbenv local {{.Required}}"
+
+  - id: asdf-install-ruby
+    class: safe
+    when: { has_tool: asdf }
+    label: "Install Ruby {{.Required}} via asdf"
+    command: "asdf plugin add ruby >/dev/null 2>&1 || true; asdf install ruby {{.Required}} && asdf local ruby {{.Required}}"
+
+  - id: brew-install-ruby
+    class: shared
+    when: { has_tool: brew }
+    label: "Install Ruby via Homebrew"
+    command: "brew install ruby"
+    fallback: true
