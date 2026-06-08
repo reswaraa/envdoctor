@@ -8,8 +8,7 @@ RUN apt-get update \
         bash ca-certificates coreutils curl git \
     && rm -rf /var/lib/apt/lists/*
 
-RUN curl --retry 5 --retry-delay 5 --retry-all-errors --retry-max-time 120 \
-        -fsSL https://mise.run | sh \
+RUN curl -fsSL https://mise.run | sh \
     && cp /root/.local/bin/mise /usr/local/bin/mise
 
 ENV PATH="/root/.local/share/mise/shims:/usr/local/bin:${PATH}"
