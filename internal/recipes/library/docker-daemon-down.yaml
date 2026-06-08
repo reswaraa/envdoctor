@@ -1,0 +1,55 @@
+id: docker-daemon-down
+probe: docker-running
+
+# Starting the daemon is platform-specific. On macOS the typical path
+# is launching Docker Desktop (`open -a Docker`); colima users have a
+# `colima start` alternative. On Linux, the docker daemon is managed by
+# systemd and starting it requires root.
+
+fixes:
+  - id: colima-start
+    class: safe
+    when: { has_tool: colima }
+    label: "Start the colima VM"
+    command: "colima start"
+    test:
+      # colima is darwin-only in practice; no fixture image in MVP.
+      image: envdoctor/test-darwin-brew:latest
+      params: {}
+      before:
+        check: "! docker info >/dev/null 2>&1"
+      after:
+        check: "docker info >/dev/null 2>&1"
+        idempotent: true
+
+  - id: open-docker-desktop
+    class: safe
+    when: { os: darwin }
+    label: "Open Docker Desktop"
+    # `open -a Docker` returns immediately; the daemon takes ~10s to
+    # come up. The recipe is still idempotent (re-running just brings
+    # the app to the foreground).
+    command: "open -a Docker"
+    test:
+      image: envdoctor/test-darwin-brew:latest
+      params: {}
+      before:
+        check: "! docker info >/dev/null 2>&1"
+      after:
+        check: "docker info >/dev/null 2>&1"
+        idempotent: true
+
+  - id: systemctl-start-docker
+    class: privileged
+    when: { os: linux }
+    label: "Start the docker systemd service"
+    command: "sudo systemctl start docker"
+    fallback: true
+    test:
+      image: envdoctor/test-linux-fresh:latest
+      params: {}
+      before:
+        check: "! docker info >/dev/null 2>&1"
+      after:
+        check: "docker info >/dev/null 2>&1"
+        idempotent: true

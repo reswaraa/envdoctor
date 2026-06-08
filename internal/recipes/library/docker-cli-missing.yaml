@@ -1,0 +1,42 @@
+id: docker-cli-missing
+probe: docker-running
+
+# Installing the docker CLI is a global-state change on every platform.
+# The macOS path uses the cask form; Linux requires the user to add the
+# Docker apt repository or use the distro package. The apt option is
+# privileged (sudo) and not auto-runnable under --fix.
+
+fixes:
+  - id: brew-cask-docker
+    class: shared
+    when: { os: darwin, has_tool: brew }
+    label: "Install Docker Desktop via Homebrew Cask"
+    command: "brew install --cask docker"
+    test:
+      # darwin-only; no docker fixture container in MVP.
+      image: envdoctor/test-darwin-brew:latest
+      params: {}
+      before:
+        check: "! command -v docker"
+      after:
+        check: "command -v docker"
+        idempotent: true
+
+  - id: apt-install-docker
+    class: privileged
+    when: { os: linux, has_tool: apt }
+    label: "Install Docker via apt"
+    # Privileged Fixes are documentation-only for --fix: envdoctor prints
+    # the command; the user types sudo themselves. The recipe-test
+    # harness skips privileged-class Fixes (containers run as root and
+    # the sudo wrapping would be meaningless).
+    command: "sudo apt-get update && sudo apt-get install -y docker.io"
+    fallback: true
+    test:
+      image: envdoctor/test-linux-fresh:latest
+      params: {}
+      before:
+        check: "! command -v docker"
+      after:
+        check: "command -v docker"
+        idempotent: true

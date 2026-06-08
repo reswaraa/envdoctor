@@ -119,6 +119,13 @@ func runFix(r recipes.Recipe, fix recipes.Fix, built map[string]bool, _ bool) re
 	if fix.Test.Image == "" {
 		return result{kind: kindSkipped, reason: "no test block"}
 	}
+	if fix.Class == recipes.ClassPrivileged {
+		// Privileged fixes contain a literal `sudo` and are meant to be
+		// typed by the user. Running them under root inside a container
+		// strips the trust gate; running them outside the container has
+		// nowhere safe to land. Skip with a clear reason.
+		return result{kind: kindSkipped, reason: "privileged class — must be run manually"}
+	}
 	dockerfile, ok := fixtures[fix.Test.Image]
 	if !ok {
 		return result{kind: kindSkipped, reason: "image not in fixture set: " + fix.Test.Image}
