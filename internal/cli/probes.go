@@ -25,5 +25,6 @@ func BuiltinProbes(lib *recipes.Library) []probes.Probe {
 		probes.PortFree(lib),
 		probes.DockerRunning(lib),
 		probes.PathCommand(lib),
+		probes.ArchMismatch(lib),
 	}
 }

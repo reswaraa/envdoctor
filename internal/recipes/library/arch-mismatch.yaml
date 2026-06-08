@@ -1,0 +1,18 @@
+id: native-arm64-missing
+probe: arch-mismatch
+
+# A single fix: bump the offending package to its first arm64-prebuilt
+# version. The probe supplies .Name and .FixedVersion from its curated
+# knownX86Issues map (sharp 0.33+, canvas 2.11+, cypress 13+).
+#
+# No test block — exercising this fix in a fixture container would
+# require scaffolding a full Node project with the bad version
+# installed (mise/fnm + npm init + npm install <name>@<old>), which
+# adds 30s+ per fix. The recipe-test harness will SKIP this with
+# "no test block". Coverage is via the probe's evaluate() unit test.
+
+fixes:
+  - id: bump-to-arm-compatible
+    class: safe
+    label: "Upgrade {{.Name}} to >={{.FixedVersion}} (first arm64-prebuilt)"
+    command: "npm install {{.Name}}@^{{.FixedVersion}}"
