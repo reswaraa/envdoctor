@@ -1,0 +1,39 @@
+id: path-command-missing
+probe: path-command
+
+# Generic installer with package names parameterized via the probe's
+# commandPackages map. The probe supplies BrewPackage and AptPackage for
+# any command it has a mapping for; commands without a mapping produce
+# a Finding without a Fix and signal exit code 2 (envdoctor needs a
+# new recipe).
+
+fixes:
+  - id: brew-install
+    class: shared
+    when: { has_tool: brew }
+    label: "Install {{.Command}} via Homebrew ({{.BrewPackage}})"
+    command: "brew install {{.BrewPackage}}"
+    test:
+      # brew is macOS-only in practice; no fixture image in MVP.
+      image: envdoctor/test-darwin-brew:latest
+      params: { Command: "make", BrewPackage: "make", AptPackage: "build-essential" }
+      before:
+        check: "! command -v make"
+      after:
+        check: "command -v make"
+        idempotent: true
+
+  - id: apt-install
+    class: privileged
+    when: { has_tool: apt }
+    label: "Install {{.Command}} via apt ({{.AptPackage}})"
+    command: "sudo apt-get install -y {{.AptPackage}}"
+    fallback: true
+    test:
+      image: envdoctor/test-linux-fresh:latest
+      params: { Command: "make", BrewPackage: "make", AptPackage: "build-essential" }
+      before:
+        check: "! command -v make"
+      after:
+        check: "command -v make"
+        idempotent: true

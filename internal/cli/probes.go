@@ -24,5 +24,6 @@ func BuiltinProbes(lib *recipes.Library) []probes.Probe {
 		probes.EnvRequired(lib),
 		probes.PortFree(lib),
 		probes.DockerRunning(lib),
+		probes.PathCommand(lib),
 	}
 }
