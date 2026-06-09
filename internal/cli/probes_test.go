@@ -8,6 +8,7 @@ import (
 	"sort"
 	"testing"
 
+	"github.com/reswaraa/envdoctor/internal/config"
 	"github.com/reswaraa/envdoctor/internal/recipes"
 )
 
@@ -16,7 +17,7 @@ func TestBuiltinProbes_ContainsExpectedIDs(t *testing.T) {
 	if err != nil {
 		t.Fatalf("DefaultLibrary: %v", err)
 	}
-	ps := BuiltinProbes(lib)
+	ps := BuiltinProbes(lib, nil)
 	if len(ps) != 9 {
 		t.Fatalf("expected 9 probes; got %d", len(ps))
 	}
@@ -36,8 +37,38 @@ func TestBuiltinProbes_ContainsExpectedIDs(t *testing.T) {
 }
 
 func TestBuiltinProbes_NilLibAllowed(t *testing.T) {
-	ps := BuiltinProbes(nil)
+	ps := BuiltinProbes(nil, nil)
 	if len(ps) != 9 {
-		t.Fatalf("expected 9 probes even with nil lib; got %d", len(ps))
+		t.Fatalf("expected 9 probes even with nil lib/cfg; got %d", len(ps))
+	}
+}
+
+func TestBuiltinProbes_AppendsCustomWhenConfigHasChecks(t *testing.T) {
+	cfg := &config.Config{
+		SchemaVersion: 1,
+		Checks: []config.Check{
+			{Type: config.CheckCommandPresent, Command: "git"},
+		},
+	}
+	ps := BuiltinProbes(nil, cfg)
+	if len(ps) != 10 {
+		t.Fatalf("expected 10 probes (9 builtins + custom); got %d", len(ps))
+	}
+	found := false
+	for _, p := range ps {
+		if p.ID() == "custom" {
+			found = true
+		}
+	}
+	if !found {
+		t.Error("custom probe must be appended when config.Checks is non-empty")
+	}
+}
+
+func TestBuiltinProbes_NoCustomWhenConfigHasNoChecks(t *testing.T) {
+	cfg := &config.Config{SchemaVersion: 1}
+	ps := BuiltinProbes(nil, cfg)
+	if len(ps) != 9 {
+		t.Errorf("expected 9 probes (no custom for empty checks); got %d", len(ps))
 	}
 }

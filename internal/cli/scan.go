@@ -12,6 +12,7 @@ import (
 
 	"github.com/spf13/cobra"
 
+	"github.com/reswaraa/envdoctor/internal/config"
 	"github.com/reswaraa/envdoctor/internal/engine"
 	"github.com/reswaraa/envdoctor/internal/output"
 	"github.com/reswaraa/envdoctor/internal/probes"
@@ -76,14 +77,45 @@ func runScan(ctx context.Context, cwd string, f scanFlags) (*output.Report, erro
 	if err != nil {
 		return nil, &exitErr{code: ExitCrashed, err: fmt.Errorf("load recipes: %w", err)}
 	}
+	cfg, err := config.Load(repoRoot, Version)
+	if err != nil {
+		// Surface the stable error code in stderr-equivalent output
+		// the caller can render. ExitConfigParseError tells CI the
+		// difference between a broken machine and a broken config.
+		return nil, &exitErr{code: ExitConfigParseError, err: err}
+	}
 
-	findings, _ := engine.New(BuiltinProbes(lib)).Run(ctx, probes.Input{
+	findings, _ := engine.New(BuiltinProbes(lib, cfg)).Run(ctx, probes.Input{
 		RepoRoot: repoRoot,
 		System:   facts,
 	})
-	report.Findings = findings
+	report.Findings = filterDisabled(findings, cfg)
 	report.Finalize()
 	return report, nil
+}
+
+// filterDisabled drops findings whose Probe ID appears in cfg.Disable.
+// Disable entries can be a bare probe ID ("node-version") or an
+// inferred-check ID (the inferred:probe:source#key form). MVP only
+// supports the bare-probe-ID case; per-inferred-source filtering is
+// Phase 4 commit 28's job once probes start emitting stable inferred
+// IDs.
+func filterDisabled(findings []output.Finding, cfg *config.Config) []output.Finding {
+	if cfg == nil || len(cfg.Disable) == 0 {
+		return findings
+	}
+	disabled := map[string]bool{}
+	for _, id := range cfg.Disable {
+		disabled[id] = true
+	}
+	out := make([]output.Finding, 0, len(findings))
+	for _, f := range findings {
+		if disabled[f.Probe] {
+			continue
+		}
+		out = append(out, f)
+	}
+	return out
 }
 
 func emitReport(stdout io.Writer, r *output.Report, f scanFlags) error {

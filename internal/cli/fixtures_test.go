@@ -74,7 +74,7 @@ func TestScan_FixtureRepos(t *testing.T) {
 	if err != nil {
 		t.Fatalf("DefaultLibrary: %v", err)
 	}
-	ps := BuiltinProbes(lib)
+	ps := BuiltinProbes(lib, nil)
 
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {

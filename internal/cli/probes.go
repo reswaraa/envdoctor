@@ -4,6 +4,7 @@
 package cli
 
 import (
+	"github.com/reswaraa/envdoctor/internal/config"
 	"github.com/reswaraa/envdoctor/internal/probes"
 	"github.com/reswaraa/envdoctor/internal/recipes"
 )
@@ -15,11 +16,16 @@ import (
 // is allowed; probes degrade gracefully and emit Findings without
 // recipes.
 //
+// cfg is the loaded .envdoctor.yaml (or nil if absent). When cfg has
+// declarative checks, an additional `custom` probe is appended that
+// interprets them. cfg.Disable filtering is applied to findings at
+// the scan layer, not here.
+//
 // New probes register here. The slice's order is not load-bearing
 // (the engine sorts findings by probe ID at output time), but keeping
 // it stable makes diffs easier to read.
-func BuiltinProbes(lib *recipes.Library) []probes.Probe {
-	return []probes.Probe{
+func BuiltinProbes(lib *recipes.Library, cfg *config.Config) []probes.Probe {
+	ps := []probes.Probe{
 		probes.NodeVersion(lib),
 		probes.PythonVersion(lib),
 		probes.GoVersion(lib),
@@ -30,4 +36,8 @@ func BuiltinProbes(lib *recipes.Library) []probes.Probe {
 		probes.PathCommand(lib),
 		probes.ArchMismatch(lib),
 	}
+	if cfg != nil && len(cfg.Checks) > 0 {
+		ps = append(ps, probes.CustomChecks(cfg))
+	}
+	return ps
 }
