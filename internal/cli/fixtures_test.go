@@ -96,7 +96,7 @@ func TestScan_FixtureRepos(t *testing.T) {
 				}
 			}
 
-			report, err := runScan(context.Background(), fixture, scanFlags{})
+			report, _, err := runScan(context.Background(), fixture, scanFlags{})
 			if err != nil {
 				t.Fatalf("runScan: %v", err)
 			}

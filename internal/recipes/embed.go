@@ -4,7 +4,9 @@
 package recipes
 
 import (
+	"crypto/sha256"
 	"embed"
+	"encoding/hex"
 	"fmt"
 	"io/fs"
 	"path"
@@ -24,11 +26,25 @@ func DefaultLibrary() (*Library, error) {
 }
 
 // Library is the parsed recipe set with O(1) lookup by recipe ID and
-// O(1) probe → []Recipe index.
+// O(1) probe → []Recipe index. The hash field pins the source-bytes
+// SHA-256 so debug bundles can record which recipe set was active
+// when the scan ran.
 type Library struct {
 	Recipes []Recipe
 	byID    map[string]int
 	byProbe map[string][]int
+	hash    string
+}
+
+// Hash returns the hex-encoded SHA-256 of the concatenated source
+// bytes of the recipe YAML files (alphabetical by path). Debug
+// bundles include this so `envdoctor explain` can tell when the
+// rendering binary's library has drifted from the bundle's source.
+func (l *Library) Hash() string {
+	if l == nil {
+		return ""
+	}
+	return l.hash
 }
 
 // Lookup returns the Recipe with the given ID, or false.
@@ -81,11 +97,13 @@ func LoadFS(fsys fs.FS, root string) (*Library, error) {
 	}
 	sort.Strings(files)
 
+	hasher := sha256.New()
 	for _, p := range files {
 		b, readErr := fs.ReadFile(fsys, p)
 		if readErr != nil {
 			return nil, fmt.Errorf("read %s: %w", p, readErr)
 		}
+		hasher.Write(b)
 		var r Recipe
 		if uErr := yaml.Unmarshal(b, &r); uErr != nil {
 			return nil, fmt.Errorf("parse %s: %w", p, uErr)
@@ -102,6 +120,7 @@ func LoadFS(fsys fs.FS, root string) (*Library, error) {
 		Recipes: recipes,
 		byID:    make(map[string]int, len(recipes)),
 		byProbe: map[string][]int{},
+		hash:    hex.EncodeToString(hasher.Sum(nil)),
 	}
 	for i, r := range recipes {
 		if _, dup := lib.byID[r.ID]; dup {

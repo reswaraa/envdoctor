@@ -23,7 +23,7 @@ func TestScan_DisableFilterDropsFindings(t *testing.T) {
 disable:
   - node-version
 `)
-	report, err := runScan(context.Background(), dir, scanFlags{})
+	report, _, err := runScan(context.Background(), dir, scanFlags{})
 	if err != nil {
 		t.Fatalf("runScan: %v", err)
 	}
@@ -45,7 +45,7 @@ checks:
     command: definitely-missing-binary-zzz
     reason: "fixture test"
 `)
-	report, err := runScan(context.Background(), dir, scanFlags{})
+	report, _, err := runScan(context.Background(), dir, scanFlags{})
 	if err != nil {
 		t.Fatalf("runScan: %v", err)
 	}
@@ -75,7 +75,7 @@ checks:
 func TestScan_MalformedConfigReturnsExitConfigParseError(t *testing.T) {
 	dir := t.TempDir()
 	mustWrite(t, dir, ".envdoctor.yaml", "schema_version: 1\nchecks:\n  - type: nope\n")
-	_, err := runScan(context.Background(), dir, scanFlags{})
+	_, _, err := runScan(context.Background(), dir, scanFlags{})
 	code, ok := asExitCode(err)
 	if !ok {
 		t.Fatalf("expected exitErr; got %v", err)

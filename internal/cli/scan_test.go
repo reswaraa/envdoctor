@@ -11,12 +11,13 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/reswaraa/envdoctor/internal/bundle"
 	"github.com/reswaraa/envdoctor/internal/output"
 )
 
 func TestRunScan_EmptyReturnsCleanReport(t *testing.T) {
 	dir := t.TempDir()
-	report, err := runScan(context.Background(), dir, scanFlags{})
+	report, recipeHash, err := runScan(context.Background(), dir, scanFlags{})
 	if err != nil {
 		t.Fatalf("runScan: %v", err)
 	}
@@ -29,9 +30,12 @@ func TestRunScan_EmptyReturnsCleanReport(t *testing.T) {
 	if report.SchemaVersion != output.SchemaVersion {
 		t.Errorf("SchemaVersion: got %q, want %q", report.SchemaVersion, output.SchemaVersion)
 	}
+	if recipeHash == "" {
+		t.Error("recipeHash must be set so bundles can record which library was active")
+	}
 }
 
-func TestEmitReport_BundleWritesJSON(t *testing.T) {
+func TestEmitReport_BundleWritesWrappedBundleJSON(t *testing.T) {
 	dir := t.TempDir()
 	bundlePath := filepath.Join(dir, "bundle.json")
 	r := &output.Report{
@@ -41,21 +45,37 @@ func TestEmitReport_BundleWritesJSON(t *testing.T) {
 		System:           output.System{OS: "darwin", Arch: "arm64"},
 		Findings:         []output.Finding{},
 	}
-	var stdout strings.Builder
-	if err := emitReport(&stdout, r, scanFlags{bundle: bundlePath, jsonOut: true}); err != nil {
+	var stdout, stderr strings.Builder
+	err := emitReport(&stdout, &stderr, r, "deadbeef", scanFlags{bundle: bundlePath, jsonOut: true})
+	if err != nil {
 		t.Fatalf("emitReport: %v", err)
 	}
 
-	got, err := os.ReadFile(bundlePath)
+	// The on-disk artifact is a Bundle wrapper, not a bare Report.
+	raw, err := os.ReadFile(bundlePath)
 	if err != nil {
 		t.Fatalf("read bundle: %v", err)
 	}
-	var parsed output.Report
-	if err := json.Unmarshal(got, &parsed); err != nil {
+	var parsed bundle.Bundle
+	if err := json.Unmarshal(raw, &parsed); err != nil {
 		t.Fatalf("parse bundle: %v", err)
 	}
-	if parsed.SchemaVersion != output.SchemaVersion {
-		t.Errorf("bundle SchemaVersion: got %q, want %q", parsed.SchemaVersion, output.SchemaVersion)
+	if parsed.SchemaVersion != bundle.SchemaVersion {
+		t.Errorf("bundle SchemaVersion: got %q, want %q", parsed.SchemaVersion, bundle.SchemaVersion)
+	}
+	if parsed.RecipeHash != "deadbeef" {
+		t.Errorf("bundle RecipeHash: got %q, want deadbeef", parsed.RecipeHash)
+	}
+	if parsed.Report == nil || parsed.Report.SchemaVersion != output.SchemaVersion {
+		t.Errorf("nested Report missing or wrong schema: %+v", parsed.Report)
+	}
+
+	// The pre-write preview lands on stderr, not stdout.
+	if !strings.Contains(stderr.String(), bundlePath) {
+		t.Errorf("preview should name the bundle path on stderr; got %q", stderr.String())
+	}
+	if !strings.Contains(stderr.String(), "0 env value") {
+		t.Errorf("preview should surface the env-value count; got %q", stderr.String())
 	}
 }
 
@@ -67,8 +87,8 @@ func TestEmitReport_JSONFlagWritesOnlyJSONToStdout(t *testing.T) {
 		System:           output.System{OS: "linux", Arch: "amd64"},
 		Findings:         []output.Finding{},
 	}
-	var stdout strings.Builder
-	if err := emitReport(&stdout, r, scanFlags{jsonOut: true}); err != nil {
+	var stdout, stderr strings.Builder
+	if err := emitReport(&stdout, &stderr, r, "", scanFlags{jsonOut: true}); err != nil {
 		t.Fatalf("emitReport: %v", err)
 	}
 	s := stdout.String()
@@ -88,11 +108,36 @@ func TestEmitReport_DefaultEmitsPretty(t *testing.T) {
 		System:           output.System{OS: "linux", Arch: "amd64"},
 		Findings:         []output.Finding{},
 	}
-	var stdout strings.Builder
-	if err := emitReport(&stdout, r, scanFlags{}); err != nil {
+	var stdout, stderr strings.Builder
+	if err := emitReport(&stdout, &stderr, r, "", scanFlags{}); err != nil {
 		t.Fatalf("emitReport: %v", err)
 	}
 	if !strings.Contains(stdout.String(), "Scanning /r") {
 		t.Errorf("default mode must emit the pretty header; got:\n%s", stdout.String())
+	}
+}
+
+func TestEmitReport_BundleIncludePathsKeepsRepoRoot(t *testing.T) {
+	t.Setenv("HOME", "/Users/alice")
+	dir := t.TempDir()
+	bundlePath := filepath.Join(dir, "bundle.json")
+	r := &output.Report{
+		SchemaVersion:    output.SchemaVersion,
+		EnvdoctorVersion: "test",
+		RepoRoot:         "/Users/alice/work/cool-repo",
+		System:           output.System{OS: "darwin", Arch: "arm64"},
+		Findings:         []output.Finding{},
+	}
+	var stdout, stderr strings.Builder
+	if err := emitReport(&stdout, &stderr, r, "", scanFlags{
+		bundle:             bundlePath,
+		bundleIncludePaths: true,
+		jsonOut:            true,
+	}); err != nil {
+		t.Fatalf("emitReport: %v", err)
+	}
+	raw, _ := os.ReadFile(bundlePath)
+	if !strings.Contains(string(raw), "/Users/alice/work/cool-repo") {
+		t.Errorf("--bundle-include-paths must keep RepoRoot verbatim; got:\n%s", string(raw))
 	}
 }
