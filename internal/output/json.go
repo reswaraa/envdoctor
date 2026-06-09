@@ -90,9 +90,12 @@ const (
 // Finding is a single result emitted by a probe.
 //
 // DocURL is required; CI in Phase 8 fails the build if any emitted DocURL
-// 404s on the docs site. RecipeID/RecipeCommand are populated when the
-// recipe library has a fix for this finding; absent recipes are not an
-// error, they signal that envdoctor needs a new recipe (exit code 2).
+// 404s on the docs site. RecipeID/RecipeCommand/RecipeClass are populated
+// together when the recipe library has a fix for this finding; absent
+// recipes are not an error, they signal that envdoctor needs a new recipe
+// (exit code 2). RecipeClass is one of safe/shared/destructive/privileged
+// — `envdoctor fix` uses it to drive the consent prompt and to refuse
+// auto-running privileged commands.
 type Finding struct {
 	ID            string   `json:"id"`
 	Probe         string   `json:"probe"`
@@ -104,6 +107,7 @@ type Finding struct {
 	Expected      string   `json:"expected,omitempty"`
 	Evidence      []string `json:"evidence,omitempty"`
 	RecipeID      string   `json:"recipe_id,omitempty"`
+	RecipeClass   string   `json:"recipe_class,omitempty"`
 	RecipeCommand string   `json:"recipe_command,omitempty"`
 	DocURL        string   `json:"doc_url"`
 }

@@ -159,6 +159,7 @@ func (p *nodeVersionProbe) applyRecipe(f output.Finding, req inference.NodeRequi
 		return f
 	}
 	f.RecipeID = fix.ID
+	f.RecipeClass = string(fix.Class)
 	f.RecipeCommand = cmd
 	return f
 }

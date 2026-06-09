@@ -151,6 +151,7 @@ func (p *envRequiredProbe) applyRecipe(f output.Finding, facts *system.Facts) ou
 		return f
 	}
 	f.RecipeID = fix.ID
+	f.RecipeClass = string(fix.Class)
 	f.RecipeCommand = cmd
 	return f
 }

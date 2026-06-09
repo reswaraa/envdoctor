@@ -128,6 +128,7 @@ func (p *archMismatchProbe) applyRecipe(f output.Finding, name string, issue x86
 		return f
 	}
 	f.RecipeID = fix.ID
+	f.RecipeClass = string(fix.Class)
 	f.RecipeCommand = cmd
 	return f
 }

@@ -117,6 +117,7 @@ func (p *pathCommandProbe) applyRecipe(f output.Finding, cmd string, facts *syst
 		return f
 	}
 	f.RecipeID = fix.ID
+	f.RecipeClass = string(fix.Class)
 	f.RecipeCommand = cmdStr
 	return f
 }

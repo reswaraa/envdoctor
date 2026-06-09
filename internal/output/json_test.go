@@ -36,6 +36,7 @@ func TestReport_RoundTrip(t *testing.T) {
 				Expected:      "^20.0.0",
 				Evidence:      []string{".nvmrc"},
 				RecipeID:      "mise-install-node",
+				RecipeClass:   "safe",
 				RecipeCommand: "mise install node@20.10.0",
 				DocURL:        "https://envdoctor.dev/probes/node-version-mismatch",
 			},
@@ -72,6 +73,15 @@ func TestReport_RoundTrip(t *testing.T) {
 	}
 	if out.Findings[0].DocURL != in.Findings[0].DocURL {
 		t.Errorf("Finding.DocURL: got %q, want %q", out.Findings[0].DocURL, in.Findings[0].DocURL)
+	}
+	// RecipeClass is part of the canonical schema as of Phase 6; renaming
+	// any of safe/shared/destructive/privileged is an incompatible change.
+	if out.Findings[0].RecipeClass != "safe" {
+		t.Errorf("Finding.RecipeClass round-trip: got %q, want %q", out.Findings[0].RecipeClass, "safe")
+	}
+	raw := buf.String()
+	if !strings.Contains(raw, `"recipe_class": "safe"`) {
+		t.Errorf("on-wire JSON must use snake_case `recipe_class`; got:\n%s", raw)
 	}
 }
 

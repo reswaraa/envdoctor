@@ -103,6 +103,7 @@ func (p *dockerRunningProbe) applyRecipe(f output.Finding, recipeID string, fact
 		return f
 	}
 	f.RecipeID = fix.ID
+	f.RecipeClass = string(fix.Class)
 	f.RecipeCommand = cmd
 	return f
 }

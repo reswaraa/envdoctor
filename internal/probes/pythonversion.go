@@ -131,6 +131,7 @@ func (p *pythonVersionProbe) applyRecipe(f output.Finding, req inference.PythonR
 		return f
 	}
 	f.RecipeID = fix.ID
+	f.RecipeClass = string(fix.Class)
 	f.RecipeCommand = cmd
 	return f
 }

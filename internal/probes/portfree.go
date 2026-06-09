@@ -120,6 +120,7 @@ func (p *portFreeProbe) applyRecipe(f output.Finding, port int, holder string, f
 		return f
 	}
 	f.RecipeID = fix.ID
+	f.RecipeClass = string(fix.Class)
 	f.RecipeCommand = cmd
 	return f
 }
