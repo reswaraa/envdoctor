@@ -1,0 +1,96 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://envdoctor.dev/schemas/v1/config.json",
+  "title": "envdoctor config",
+  "description": "Schema for .envdoctor.yaml — repo-level overrides, additive checks, and disables for envdoctor's inferred check set. See https://envdoctor.dev/config for the human-readable reference.",
+  "type": "object",
+  "required": ["schema_version"],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "description": "Pins the config schema version. Forever-stable for v0.x.",
+      "const": 1
+    },
+    "envdoctor": {
+      "type": "object",
+      "description": "Meta-options for the envdoctor binary itself.",
+      "additionalProperties": false,
+      "properties": {
+        "min_version": {
+          "type": "string",
+          "description": "Minimum envdoctor binary version required to read this config. Refuses to load if the running binary is older. Set to a semver string like \"0.1.0\". Empty or absent means any version."
+        }
+      }
+    },
+    "checks": {
+      "type": "array",
+      "description": "Additive declarative checks. Each check emits at most one Finding when its condition isn't met. Builtin checks emit findings independently — these add to them, they do not replace them.",
+      "items": { "$ref": "#/$defs/Check" }
+    },
+    "overrides": {
+      "type": "array",
+      "description": "Modify the parameters of an inferred check without disabling it. Each override targets an inferred check ID (see https://envdoctor.dev/config#inferred-ids).",
+      "items": { "$ref": "#/$defs/Override" }
+    },
+    "disable": {
+      "type": "array",
+      "description": "Disable an inferred probe entirely (by probe ID such as \"node-version\") or one inferred check (by inferred:probe:source[#key] ID — once Phase 4 commit 28+ stable IDs land).",
+      "items": { "type": "string", "minLength": 1 }
+    }
+  },
+
+  "$defs": {
+    "Check": {
+      "type": "object",
+      "required": ["type"],
+      "properties": {
+        "type": {
+          "enum": ["tool_version", "port_free", "env_required", "command_present"],
+          "description": "The check kind. Determines which other fields are meaningful."
+        },
+        "reason": {
+          "type": "string",
+          "description": "Why this check exists. Surfaced in Finding evidence so the contributor sees the maintainer's intent."
+        },
+        "tool":    { "type": "string" },
+        "version": { "type": "string" },
+        "port":    { "type": "integer", "minimum": 1, "maximum": 65535 },
+        "file":    { "type": "string" },
+        "keys":    { "type": "array", "items": { "type": "string" } },
+        "command": { "type": "string" }
+      },
+      "allOf": [
+        {
+          "if":   { "properties": { "type": { "const": "tool_version" } } },
+          "then": { "required": ["tool", "version"] }
+        },
+        {
+          "if":   { "properties": { "type": { "const": "port_free" } } },
+          "then": { "required": ["port"] }
+        },
+        {
+          "if":   { "properties": { "type": { "const": "env_required" } } },
+          "then": { "required": ["keys"], "properties": { "keys": { "minItems": 1 } } }
+        },
+        {
+          "if":   { "properties": { "type": { "const": "command_present" } } },
+          "then": { "required": ["command"] }
+        }
+      ]
+    },
+
+    "Override": {
+      "type": "object",
+      "required": ["id"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The inferred check ID this override targets, e.g. \"inferred:node-version:package.json#engines.node\"."
+        },
+        "version": { "type": "string" },
+        "port":    { "type": "integer", "minimum": 1, "maximum": 65535 }
+      }
+    }
+  }
+}
