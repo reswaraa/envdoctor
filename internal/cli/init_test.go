@@ -341,6 +341,201 @@ func TestRunInit_PrintsPasteSnippets(t *testing.T) {
 	}
 }
 
+// --- flag tests --------------------------------------------------
+
+func TestRunInit_WithCI_WritesWorkflow(t *testing.T) {
+	dir := chdirTemp(t)
+	_, stderr, err := runInitWith(t, initOpts{
+		repo:       "test/repo",
+		envdoctorV: "0.1.0",
+		fetcher:    fakeFetcher(sampleSums(), nil),
+		skipScan:   true,
+		withCI:     true,
+	})
+	if err != nil {
+		t.Fatalf("runInit: %v\nstderr:\n%s", err, stderr)
+	}
+	wfPath := filepath.Join(dir, ".github", "workflows", "envdoctor.yml")
+	body, err := os.ReadFile(wfPath)
+	if err != nil {
+		t.Fatalf("expected workflow at %s; %v", wfPath, err)
+	}
+	for _, want := range []string{
+		"name: envdoctor",
+		"on:",
+		"pull_request:",
+		"./envdoctor scan",
+		"actions/checkout@v4",
+	} {
+		if !strings.Contains(string(body), want) {
+			t.Errorf("workflow missing %q; got:\n%s", want, string(body))
+		}
+	}
+}
+
+func TestRunInit_WithCI_RefusesIfWorkflowExists(t *testing.T) {
+	dir := chdirTemp(t)
+	wfDir := filepath.Join(dir, ".github", "workflows")
+	if err := os.MkdirAll(wfDir, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(wfDir, "envdoctor.yml"), []byte("# stale\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	_, _, err := runInitWith(t, initOpts{
+		repo:       "test/repo",
+		envdoctorV: "0.1.0",
+		fetcher:    fakeFetcher(sampleSums(), nil),
+		skipScan:   true,
+		withCI:     true,
+	})
+	if err == nil {
+		t.Fatal("expected refusal when envdoctor.yml already exists")
+	}
+	if !strings.Contains(err.Error(), "already exists") {
+		t.Errorf("error should explain `already exists`; got %q", err.Error())
+	}
+}
+
+func TestRunInit_WithCI_ForceOverwrites(t *testing.T) {
+	dir := chdirTemp(t)
+	wfDir := filepath.Join(dir, ".github", "workflows")
+	if err := os.MkdirAll(wfDir, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(wfDir, "envdoctor.yml"), []byte("# stale\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	_, _, err := runInitWith(t, initOpts{
+		repo:       "test/repo",
+		envdoctorV: "0.1.0",
+		fetcher:    fakeFetcher(sampleSums(), nil),
+		skipScan:   true,
+		withCI:     true,
+		force:      true,
+	})
+	if err != nil {
+		t.Fatalf("--force should allow overwrite; err=%v", err)
+	}
+	got, _ := os.ReadFile(filepath.Join(wfDir, "envdoctor.yml"))
+	if strings.Contains(string(got), "# stale") {
+		t.Errorf("--force did not replace stale workflow; got:\n%s", string(got))
+	}
+}
+
+func TestRunInit_WithConfig_WritesCommentedVariant(t *testing.T) {
+	dir := chdirTemp(t)
+	_, _, err := runInitWith(t, initOpts{
+		repo:       "test/repo",
+		envdoctorV: "0.1.0",
+		fetcher:    fakeFetcher(sampleSums(), nil),
+		skipScan:   true,
+		withConfig: true,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	body, err := os.ReadFile(filepath.Join(dir, ".envdoctor.yaml"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	// The richer form includes commented example check entries.
+	// The minimal form is just schema + min_version.
+	for _, want := range []string{
+		`schema_version: 1`,
+		`min_version: "0.1.0"`,
+		`type: tool_version`,
+		`type: port_free`,
+		`type: env_required`,
+		`type: command_present`,
+		`overrides:`,
+		`disable:`,
+	} {
+		if !strings.Contains(string(body), want) {
+			t.Errorf("commented config missing %q; got:\n%s", want, string(body))
+		}
+	}
+	// Every check example MUST be commented out (inference-first).
+	lines := strings.Split(string(body), "\n")
+	for _, line := range lines {
+		trimmed := strings.TrimSpace(line)
+		if strings.HasPrefix(trimmed, "- type:") {
+			t.Errorf("check entry must be commented (start with #); got line: %q", line)
+		}
+	}
+}
+
+func TestRunInit_ReadmeBadge_AppendsBadgeToReadmeSnippet(t *testing.T) {
+	chdirTemp(t)
+	// Without the flag: no badge.
+	stdout, _, err := runInitWith(t, initOpts{
+		repo:       "test/repo",
+		envdoctorV: "0.1.0",
+		fetcher:    fakeFetcher(sampleSums(), nil),
+		skipScan:   true,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if strings.Contains(stdout, "envdoctor.dev/badge.svg") {
+		t.Errorf("default snippet must NOT include the badge; got:\n%s", stdout)
+	}
+
+	// Fresh tempdir for the with-flag run.
+	chdirTemp(t)
+	stdout, _, err = runInitWith(t, initOpts{
+		repo:        "octocat/hello-world",
+		envdoctorV:  "0.1.0",
+		fetcher:     fakeFetcher(sampleSums(), nil),
+		skipScan:    true,
+		readmeBadge: true,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !strings.Contains(stdout, "envdoctor.dev/badge.svg") {
+		t.Errorf("--readme-badge should append the badge; got:\n%s", stdout)
+	}
+	if !strings.Contains(stdout, "octocat/hello-world") {
+		t.Errorf("badge link should reference the --repo value; got:\n%s", stdout)
+	}
+}
+
+func TestRunInit_AllFlagsTogether(t *testing.T) {
+	// Sanity: --with-ci --with-config --readme-badge are independent
+	// and combinable. None of them should clobber each other.
+	dir := chdirTemp(t)
+	stdout, _, err := runInitWith(t, initOpts{
+		repo:        "test/repo",
+		envdoctorV:  "0.1.0",
+		fetcher:     fakeFetcher(sampleSums(), nil),
+		skipScan:    true,
+		withCI:      true,
+		withConfig:  true,
+		readmeBadge: true,
+	})
+	if err != nil {
+		t.Fatalf("runInit: %v", err)
+	}
+	// All three artefacts present + the badge in stdout.
+	for _, want := range []string{
+		filepath.Join(dir, "envdoctor"),
+		filepath.Join(dir, ".envdoctor.yaml"),
+		filepath.Join(dir, ".github", "workflows", "envdoctor.yml"),
+	} {
+		if _, err := os.Stat(want); err != nil {
+			t.Errorf("expected %s; %v", want, err)
+		}
+	}
+	if !strings.Contains(stdout, "envdoctor.dev/badge.svg") {
+		t.Errorf("badge missing from stdout; got:\n%s", stdout)
+	}
+	cfg, _ := os.ReadFile(filepath.Join(dir, ".envdoctor.yaml"))
+	if !strings.Contains(string(cfg), "type: tool_version") {
+		t.Errorf("config should be the commented form when --with-config; got:\n%s", cfg)
+	}
+}
+
 // --- atomicWriteFile ---------------------------------------------
 
 func TestAtomicWriteFile_SetsExactMode(t *testing.T) {

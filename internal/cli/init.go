@@ -53,13 +53,14 @@ type platformSHAs struct {
 type sumFetcher func(ctx context.Context, repo, version string) (platformSHAs, error)
 
 type initOpts struct {
-	force      bool
-	skipScan   bool
-	repo       string
-	fetcher    sumFetcher
-	envdoctorV string // injected for tests (defaults to Version)
-	// The --with-ci / --with-config / --readme-badge flags are
-	// added by commit 38; their booleans land on this struct then.
+	force       bool
+	skipScan    bool
+	repo        string
+	fetcher     sumFetcher
+	envdoctorV  string // injected for tests (defaults to Version)
+	withCI      bool
+	withConfig  bool
+	readmeBadge bool
 }
 
 func newInitCmd() *cobra.Command {
@@ -96,6 +97,9 @@ paste are printed to stdout at the end.`,
 	cmd.Flags().BoolVar(&f.force, "force", false, "overwrite existing ./envdoctor and .envdoctor.yaml")
 	cmd.Flags().BoolVar(&f.skipScan, "skip-scan", false, "scaffold even if the current scan has findings (dangerous; only use when intentionally pinning a broken state)")
 	cmd.Flags().StringVar(&f.repo, "repo", defaultRepo, "GitHub repo owner/name baked into the bootstrap")
+	cmd.Flags().BoolVar(&f.withCI, "with-ci", false, "also write .github/workflows/envdoctor.yml (PR + push-to-main scan)")
+	cmd.Flags().BoolVar(&f.withConfig, "with-config", false, "scaffold a richer commented .envdoctor.yaml with override + check examples (instead of the bare minimum)")
+	cmd.Flags().BoolVar(&f.readmeBadge, "readme-badge", false, "include a Markdown badge snippet in the printed README block")
 	return cmd
 }
 
@@ -159,12 +163,33 @@ func runInit(cmd *cobra.Command, opts initOpts) error {
 	}
 	writef(stderr, "  wrote %s (chmod 0755)\n", relpath(repoRoot, bootstrapPath))
 
-	if err := atomicWriteFile(configPath, []byte(renderMinimalConfig(version)), 0o644); err != nil {
+	cfgBody := renderMinimalConfig(version)
+	if opts.withConfig {
+		cfgBody = renderCommentedConfig(version)
+	}
+	if err := atomicWriteFile(configPath, []byte(cfgBody), 0o644); err != nil {
 		return &exitErr{code: ExitCrashed, err: fmt.Errorf("write config: %w", err)}
 	}
 	writef(stderr, "  wrote %s\n", relpath(repoRoot, configPath))
 
-	printPasteSnippets(stdout, version)
+	if opts.withCI {
+		ciDir := filepath.Join(repoRoot, ".github", "workflows")
+		ciPath := filepath.Join(ciDir, "envdoctor.yml")
+		if !opts.force {
+			if err := refuseIfExists(ciPath); err != nil {
+				return &exitErr{code: ExitCrashed, err: err}
+			}
+		}
+		if err := os.MkdirAll(ciDir, 0o755); err != nil {
+			return &exitErr{code: ExitCrashed, err: fmt.Errorf("mkdir %s: %w", ciDir, err)}
+		}
+		if err := atomicWriteFile(ciPath, []byte(ciWorkflow), 0o644); err != nil {
+			return &exitErr{code: ExitCrashed, err: fmt.Errorf("write CI workflow: %w", err)}
+		}
+		writef(stderr, "  wrote %s\n", relpath(repoRoot, ciPath))
+	}
+
+	printPasteSnippets(stdout, version, opts.readmeBadge, opts.repo)
 	return nil
 }
 
@@ -228,6 +253,85 @@ envdoctor:
   min_version: %q
 `, strings.TrimPrefix(version, "v"))
 }
+
+// renderCommentedConfig is the --with-config form: same minimal
+// header followed by commented examples of every declarative
+// check type, plus override and disable patterns. Inference-first
+// stays intact — every example is commented out by default.
+func renderCommentedConfig(version string) string {
+	return fmt.Sprintf(`# .envdoctor.yaml — see https://envdoctor.dev/schema/v1/config
+#
+# envdoctor infers most checks from the repo's manifest files
+# (package.json, .nvmrc, docker-compose.yml, …). This file lets you
+# *add* checks or override severity on top of that — it does not
+# replace inference.
+
+schema_version: 1
+
+envdoctor:
+  min_version: %q
+
+# Additive checks. Each entry is a typed-list discriminator; the
+# four supported types are tool_version, port_free, env_required,
+# command_present. Uncomment and edit any you need.
+#
+# checks:
+#   # Require a specific tool on PATH at a constrained version.
+#   - type: tool_version
+#     tool: terraform
+#     constraint: ">=1.6,<2.0"
+#
+#   # Require a TCP port to be free at scan time.
+#   - type: port_free
+#     port: 5432
+#
+#   # Require env vars to be present (envdoctor never reads values).
+#   - type: env_required
+#     keys: [MY_API_KEY, MY_DB_URL]
+#
+#   # Require a command to be on PATH.
+#   - type: command_present
+#     command: kubectl
+
+# Override individual probe outputs by ID. Useful for project-
+# specific exceptions that envdoctor's defaults get wrong.
+#
+# overrides:
+#   node-version:
+#     severity: warning
+
+# Disable specific probes entirely by ID. Use sparingly — disabling
+# a probe means no contributor sees the finding it would have
+# raised, regardless of host state.
+#
+# disable:
+#   - arch-mismatch
+`, strings.TrimPrefix(version, "v"))
+}
+
+// ciWorkflow is the .github/workflows/envdoctor.yml file scaffolded
+// by --with-ci. The workflow invokes the per-repo bootstrap that
+// envdoctor init also wrote, so PR runs use the same SHA-pinned
+// binary every contributor uses locally.
+const ciWorkflow = `# .github/workflows/envdoctor.yml — generated by ` + "`envdoctor init --with-ci`" + `
+name: envdoctor
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: envdoctor scan
+        run: ./envdoctor scan
+`
 
 // atomicWriteFile writes content to path atomically: a tempfile
 // in the same directory followed by an os.Rename. Either the file
@@ -347,11 +451,19 @@ func relpath(base, target string) string {
 
 // printPasteSnippets writes the README and CONTRIBUTING blurbs
 // to stdout. We never mutate the user's docs — they paste these
-// where it makes sense for their project.
-func printPasteSnippets(w io.Writer, version string) {
+// where it makes sense for their project. When badge=true the
+// README block leads with a Markdown badge snippet.
+func printPasteSnippets(w io.Writer, version string, badge bool, repo string) {
 	writeln(w, "")
 	writeln(w, "─── README snippet (paste under Setup / Contributing) ───")
 	writeln(w, "")
+	if badge {
+		// The badge SVG is served from the envdoctor.dev docs site
+		// (GitHub Pages, no server). The shape is intentionally
+		// generic — a per-repo dynamic badge would need a server,
+		// which the Q9 decision rules out.
+		writef(w, "[![envdoctor scan](https://envdoctor.dev/badge.svg)](https://envdoctor.dev/repo/%s)\n\n", repo)
+	}
 	writef(w, `Run ./envdoctor scan before running tests.
 This pins envdoctor %s and verifies the binary by SHA-256 — no
 global install required.
