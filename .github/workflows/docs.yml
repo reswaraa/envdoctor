@@ -1,0 +1,84 @@
+name: docs
+
+# Builds and deploys the Starlight site at docs/ to GitHub Pages.
+# A CNAME file at docs/public/CNAME points envdoctor.dev at the
+# GitHub Pages origin, so the deployed site is served at the
+# stable Probe.DocURL contract URL — every probe emits
+# https://envdoctor.dev/probes/<id> and the doc_url lint test
+# (internal/docslint) keeps each one resolving.
+#
+# The build step runs the recipe-table drift check before the
+# Astro build: if a contributor changed
+# internal/recipes/library/*.yaml without re-running
+# `go run ./scripts/recipes-to-mdx`, the deploy fails here rather
+# than after the docs have shipped out-of-date.
+
+on:
+  push:
+    branches: [main]
+  # workflow_dispatch lets the maintainer manually trigger a
+  # deploy without pushing — useful for emergency content fixes
+  # cherry-picked outside the main branch cadence.
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Serialize deployments — two parallel pushes shouldn't race the
+# Pages origin. cancel-in-progress: false so a fast-follow push
+# doesn't abort an in-flight deploy (which can leave the Pages
+# environment in an inconsistent state).
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: build site
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: docs/package-lock.json
+
+      - name: drift check — recipe tables vs library
+        # Run from repo root so the go module resolves. The check
+        # exits non-zero if any probe page is out of sync with
+        # internal/recipes/library/*.yaml.
+        run: go run ./scripts/recipes-to-mdx -check
+
+      - name: npm ci
+        working-directory: docs
+        run: npm ci
+
+      - uses: actions/configure-pages@v5
+
+      - name: astro build
+        working-directory: docs
+        run: npm run build
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs/dist
+
+  deploy:
+    name: deploy to GitHub Pages
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/deploy-pages@v4
+        id: deployment
