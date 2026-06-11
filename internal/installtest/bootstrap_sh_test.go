@@ -32,7 +32,7 @@ const bootstrapVersion = "v8.8.8"
 // future test can render multiple versions side-by-side.
 func renderedBootstrap(t *testing.T, baseURL, sumDarwinArm, sumDarwinAmd, sumLinuxArm, sumLinuxAmd string) string {
 	t.Helper()
-	tmpl := findRepoFile(t, filepath.Join("scripts", "bootstrap.template.sh"))
+	tmpl := findRepoFile(t, filepath.Join("internal", "cli", "bootstrap_template.sh"))
 	raw, err := os.ReadFile(tmpl)
 	if err != nil {
 		t.Fatalf("read template: %v", err)

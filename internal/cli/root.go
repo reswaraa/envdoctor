@@ -31,6 +31,7 @@ repo requirements (.nvmrc, package.json, docker-compose.yml, pyproject.toml,
 	cmd.AddCommand(newVersionCmd())
 	cmd.AddCommand(newScanCmd())
 	cmd.AddCommand(newFixCmd())
+	cmd.AddCommand(newInitCmd())
 	cmd.AddCommand(newLintCmd())
 	cmd.AddCommand(newExplainCmd())
 	return cmd
