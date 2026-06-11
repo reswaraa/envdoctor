@@ -1,13 +1,16 @@
-# Recipe schema
+---
+title: Recipe schema
+description: Reference for the YAML files under internal/recipes/library/ that drive envdoctor's repair commands.
+---
 
-Recipes are the YAML files under [`internal/recipes/library/`](../../internal/recipes/library/).
+Recipes are the YAML files under [`internal/recipes/library/`](https://github.com/reswaraa/envdoctor/tree/main/internal/recipes/library/).
 Each file is a single `Recipe` — a logical group of repair commands for one
 kind of finding (e.g. "node version mismatch"). The matcher selects at most
 one `Fix` per finding based on the user's system facts.
 
 This page is the human-readable reference. The authoritative Go types are
-in [`internal/recipes/types.go`](../../internal/recipes/types.go); validation
-runs in [`internal/recipes/embed.go`](../../internal/recipes/embed.go) at
+in [`internal/recipes/types.go`](https://github.com/reswaraa/envdoctor/blob/main/internal/recipes/types.go); validation
+runs in [`internal/recipes/embed.go`](https://github.com/reswaraa/envdoctor/blob/main/internal/recipes/embed.go) at
 binary build time, and CI rejects PRs whose recipes don't parse or are
 missing required fields.
 
@@ -115,7 +118,7 @@ introducing it.
 ## `Test` block
 
 Every Fix shipped to the library must include a `test:` block. The
-recipe contract harness ([`scripts/recipe-test/`](../../scripts/recipe-test/))
+recipe contract harness ([`scripts/recipe-test/`](https://github.com/reswaraa/envdoctor/tree/main/scripts/recipe-test/))
 runs it twice per Fix in a fresh container and asserts idempotence.
 PRs without a `test:` block do not merge.
 
@@ -136,7 +139,7 @@ test:
 
 | Field | Required | Notes |
 |---|---|---|
-| `image` | yes | Container image with the tool stack the Fix expects. Maintained under [`testdata/containers/`](../../testdata/containers/). |
+| `image` | yes | Container image with the tool stack the Fix expects. Maintained under [`testdata/containers/`](https://github.com/reswaraa/envdoctor/tree/main/testdata/containers/). |
 | `setup` | no | Bash snippet run before `before.check`. Stages the broken state (e.g. creates `.env.example`, binds a port, installs an old language runtime). Not part of the Fix the user runs. |
 | `params` | yes if `command` uses any | Concrete values for template variables. |
 | `before.check` | yes | A shell command that **must exit zero**, asserting the broken state the Fix repairs. If it exits non-zero the broken state isn't present and the test cannot prove the Fix did anything. |

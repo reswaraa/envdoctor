@@ -11,7 +11,8 @@ import (
 )
 
 // TestPublishedJSONSchemaIsParseable pins three things about the
-// JSON Schema we ship at docs/schema/v1/config.json:
+// JSON Schema we ship at docs/public/schemas/v1/config.json
+// (served by Astro at the URL https://envdoctor.dev/schemas/v1/config.json):
 //
 //  1. It parses as valid JSON.
 //  2. The $id is the forever-stable URL contract.
@@ -20,7 +21,7 @@ import (
 //     the same PR, or this test fails loudly.
 func TestPublishedJSONSchemaIsParseable(t *testing.T) {
 	root := repoRoot(t)
-	b, err := os.ReadFile(filepath.Join(root, "docs", "schema", "v1", "config.json"))
+	b, err := os.ReadFile(filepath.Join(root, "docs", "public", "schemas", "v1", "config.json"))
 	if err != nil {
 		t.Fatalf("read schema: %v", err)
 	}
