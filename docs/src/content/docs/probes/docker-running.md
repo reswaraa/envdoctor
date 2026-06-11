@@ -38,7 +38,23 @@ The 3-second cap matters: a hung daemon connection can take minutes to fail by d
 
 ## Recipes
 
-Two recipes, picked by the probe based on which finding was emitted:
+Two separate recipes — `docker-cli-missing` for the install path, `docker-daemon-down` for the start-the-daemon path. The probe attaches whichever matches the finding it emitted. See the YAML source for [docker-cli-missing](https://github.com/reswaraa/envdoctor/blob/main/internal/recipes/library/docker-cli-missing.yaml) and [docker-daemon-down](https://github.com/reswaraa/envdoctor/blob/main/internal/recipes/library/docker-daemon-down.yaml).
 
-- [`docker-cli-missing`](https://github.com/reswaraa/envdoctor/blob/main/internal/recipes/library/docker-cli-missing.yaml) — `brew install --cask docker` (shared) or `apt-get install docker.io` (privileged).
-- [`docker-daemon-down`](https://github.com/reswaraa/envdoctor/blob/main/internal/recipes/library/docker-daemon-down.yaml) — `colima start`, `open -a Docker`, or `systemctl start docker` depending on the platform.
+<!-- BEGIN auto-recipes -->
+
+### `docker-cli-missing`
+
+| Fix | Class | When | Fallback |
+|---|---|---|---|
+| `brew-cask-docker` | shared | os=darwin, has_tool=brew |  |
+| `apt-install-docker` | privileged | os=linux, has_tool=apt | yes |
+
+### `docker-daemon-down`
+
+| Fix | Class | When | Fallback |
+|---|---|---|---|
+| `colima-start` | safe | has_tool=colima |  |
+| `open-docker-desktop` | safe | os=darwin |  |
+| `systemctl-start-docker` | privileged | os=linux | yes |
+
+<!-- END auto-recipes -->

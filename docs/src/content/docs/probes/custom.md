@@ -41,4 +41,10 @@ The custom probe has no automated recipe — the finding's evidence explains wha
 
 ## Recipes
 
-Currently none — the [Config schema page](https://envdoctor.dev/recipes/schema/) is the primary remediation reference. Repository maintainers are encouraged to document expected setup in their own README.
+The custom probe has no automated recipe today. The [Config schema page](https://envdoctor.dev/recipes/schema/) is the primary remediation reference; repository maintainers should document expected setup in their own README.
+
+<!-- BEGIN auto-recipes -->
+
+_No recipes today — open an issue with a debug bundle so a recipe can be authored._
+
+<!-- END auto-recipes -->

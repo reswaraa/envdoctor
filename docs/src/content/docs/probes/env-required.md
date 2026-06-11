@@ -31,4 +31,12 @@ The structural guarantee: env values, file bodies, and shell secrets never enter
 
 ## Recipes
 
-See the [recipe library](https://github.com/reswaraa/envdoctor/blob/main/internal/recipes/library/env-required.yaml). The default fix is `cp -n .env.example .env` — idempotent (`-n` won't clobber an existing file).
+The default fix is `cp -n .env.example .env` — idempotent (`-n` won't clobber an existing file). See the [YAML source](https://github.com/reswaraa/envdoctor/blob/main/internal/recipes/library/env-required.yaml).
+
+<!-- BEGIN auto-recipes -->
+
+| Fix | Class | When | Fallback |
+|---|---|---|---|
+| `copy-env-example` | safe | * |  |
+
+<!-- END auto-recipes -->

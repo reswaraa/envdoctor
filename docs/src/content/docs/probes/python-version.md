@@ -28,4 +28,15 @@ The repo declares a Python version (or constraint) your local interpreter doesn'
 
 ## Recipes
 
-See the [recipe library](https://github.com/reswaraa/envdoctor/blob/main/internal/recipes/library/python-version.yaml). Tools tried in order: `mise`, `uv`, `pyenv`, `brew`.
+The probe selects one fix based on the tools available on your machine. See the [YAML source](https://github.com/reswaraa/envdoctor/blob/main/internal/recipes/library/python-version.yaml) for the full Fix definitions.
+
+<!-- BEGIN auto-recipes -->
+
+| Fix | Class | When | Fallback |
+|---|---|---|---|
+| `mise-install-python` | safe | has_tool=mise |  |
+| `uv-install-python` | safe | has_tool=uv |  |
+| `pyenv-install-python` | safe | has_tool=pyenv |  |
+| `brew-install-python` | shared | has_tool=brew | yes |
+
+<!-- END auto-recipes -->

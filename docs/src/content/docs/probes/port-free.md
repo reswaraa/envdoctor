@@ -31,7 +31,13 @@ The probe emits one finding per colliding port — not one aggregate — so the 
 
 ## Recipes
 
-See the [recipe library](https://github.com/reswaraa/envdoctor/blob/main/internal/recipes/library/port-free.yaml). The two fixes:
+The destructive fix (`kill $(lsof -ti :<PORT>)`) always prompts. The `brew services list` fallback applies when the holder looks like a brew service. See the [YAML source](https://github.com/reswaraa/envdoctor/blob/main/internal/recipes/library/port-free.yaml).
 
-- `kill $(lsof -ti :<PORT>)` — class **destructive**; always prompts.
-- `brew services list` — class **shared** (fallback when the holder looks like a brew service).
+<!-- BEGIN auto-recipes -->
+
+| Fix | Class | When | Fallback |
+|---|---|---|---|
+| `kill-port-holder` | destructive | * |  |
+| `brew-services-list` | shared | has_tool=brew | yes |
+
+<!-- END auto-recipes -->

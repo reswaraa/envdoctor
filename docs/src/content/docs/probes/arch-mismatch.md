@@ -37,4 +37,12 @@ Currently `yarn.lock` and `pnpm-lock.yaml` are out of scope — adding them is a
 
 ## Recipes
 
-See the [recipe library](https://github.com/reswaraa/envdoctor/blob/main/internal/recipes/library/arch-mismatch.yaml). The single fix is `npm install <pkg>@<fixed-version>` which both bumps the lockfile and rebuilds against the arm64 prebuild.
+The single fix is `npm install <pkg>@<fixed-version>` which both bumps the lockfile and rebuilds against the arm64 prebuild. See the [YAML source](https://github.com/reswaraa/envdoctor/blob/main/internal/recipes/library/arch-mismatch.yaml).
+
+<!-- BEGIN auto-recipes -->
+
+| Fix | Class | When | Fallback |
+|---|---|---|---|
+| `bump-to-arm-compatible` | safe | * |  |
+
+<!-- END auto-recipes -->

@@ -28,4 +28,15 @@ The repo declares a Ruby version your local interpreter doesn't satisfy. `bundle
 
 ## Recipes
 
-See the [recipe library](https://github.com/reswaraa/envdoctor/blob/main/internal/recipes/library/ruby-version.yaml). Tools tried in order: `mise`, `rbenv`, `asdf`, `brew`.
+The probe selects one fix based on the tools available on your machine. See the [YAML source](https://github.com/reswaraa/envdoctor/blob/main/internal/recipes/library/ruby-version.yaml) for the full Fix definitions.
+
+<!-- BEGIN auto-recipes -->
+
+| Fix | Class | When | Fallback |
+|---|---|---|---|
+| `mise-install-ruby` | safe | has_tool=mise |  |
+| `rbenv-install-ruby` | safe | has_tool=rbenv |  |
+| `asdf-install-ruby` | safe | has_tool=asdf |  |
+| `brew-install-ruby` | shared | has_tool=brew | yes |
+
+<!-- END auto-recipes -->

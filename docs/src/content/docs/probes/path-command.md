@@ -30,4 +30,13 @@ The repo's build / orchestration files invoke commands (e.g. `psql`, `kubectl`, 
 
 ## Recipes
 
-See the [recipe library](https://github.com/reswaraa/envdoctor/blob/main/internal/recipes/library/path-command-missing.yaml). The curated install list maps each command to `brew install <pkg>` (shared) or `apt-get install <pkg>` (privileged). For uncurated commands the probe emits a no-recipe finding.
+The curated install list maps each command to `brew install <pkg>` (shared) or `apt-get install <pkg>` (privileged). For uncurated commands the probe emits a no-recipe finding (exit code 2). See the [YAML source](https://github.com/reswaraa/envdoctor/blob/main/internal/recipes/library/path-command-missing.yaml).
+
+<!-- BEGIN auto-recipes -->
+
+| Fix | Class | When | Fallback |
+|---|---|---|---|
+| `brew-install` | shared | has_tool=brew |  |
+| `apt-install` | privileged | has_tool=apt | yes |
+
+<!-- END auto-recipes -->

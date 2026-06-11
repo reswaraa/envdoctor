@@ -30,4 +30,14 @@ If `go.mod` is absent the probe is silent.
 
 ## Recipes
 
-See the [recipe library](https://github.com/reswaraa/envdoctor/blob/main/internal/recipes/library/go-version.yaml). Tools tried in order: `mise`, `asdf`, `brew`.
+The probe selects one fix based on the tools available on your machine. See the [YAML source](https://github.com/reswaraa/envdoctor/blob/main/internal/recipes/library/go-version.yaml) for the full Fix definitions.
+
+<!-- BEGIN auto-recipes -->
+
+| Fix | Class | When | Fallback |
+|---|---|---|---|
+| `mise-install-go` | safe | has_tool=mise |  |
+| `asdf-install-go` | safe | has_tool=asdf |  |
+| `brew-install-go` | shared | has_tool=brew | yes |
+
+<!-- END auto-recipes -->

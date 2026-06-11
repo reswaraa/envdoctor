@@ -31,4 +31,16 @@ The probe is silent if no manifest declares a Node version — inference-first m
 
 ## Recipes
 
-See the [recipe library](https://github.com/reswaraa/envdoctor/blob/main/internal/recipes/library/node-version.yaml) for the full set. The probe selects one based on the tools available on your machine — `mise`, `fnm`, `nvm`, `asdf`, or `brew` (fallback).
+The probe selects one fix based on the tools available on your machine. See the [YAML source](https://github.com/reswaraa/envdoctor/blob/main/internal/recipes/library/node-version.yaml) for the full Fix definitions.
+
+<!-- BEGIN auto-recipes -->
+
+| Fix | Class | When | Fallback |
+|---|---|---|---|
+| `mise-install-node` | safe | has_tool=mise |  |
+| `fnm-install-node` | safe | has_tool=fnm |  |
+| `nvm-install-node` | safe | has_tool=nvm |  |
+| `asdf-install-node` | safe | has_tool=asdf |  |
+| `brew-install-node` | shared | has_tool=brew | yes |
+
+<!-- END auto-recipes -->
