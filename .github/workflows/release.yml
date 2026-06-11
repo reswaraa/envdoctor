@@ -1,0 +1,54 @@
+name: release
+
+# Tag-push releases via GoReleaser. The .goreleaser.yaml in the
+# repo root drives every artefact decision: the four binaries
+# (darwin/linux × amd64/arm64), the archive naming, the
+# sha256sums.txt, and the GitHub Release block. This workflow
+# only ensures the tests still pass on the tagged ref before
+# letting GoReleaser publish.
+#
+# Tag format: vX.Y.Z (matches release.yml `tags:` filter and
+# .goreleaser.yaml's version templating). The maintainer is
+# expected to only tag commits where CI is already green.
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+permissions:
+  contents: write  # GoReleaser creates the GitHub Release + uploads assets.
+
+jobs:
+  goreleaser:
+    name: goreleaser publish
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # GoReleaser reads the full git history for the auto-
+          # generated changelog block (.goreleaser.yaml > changelog).
+          fetch-depth: 0
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+
+      - name: sanity test
+        # One last test pass on the tagged commit, with the same
+        # gates CI runs on every push. Stops a tag from publishing
+        # if go test regressed since the maintainer tagged.
+        run: go test -race -timeout=2m ./...
+
+      - name: goreleaser
+        uses: goreleaser/goreleaser-action@v6
+        with:
+          distribution: goreleaser
+          version: latest
+          args: release --clean
+        env:
+          # GoReleaser uses the workflow's built-in token to create
+          # the GitHub Release and upload the four tarballs +
+          # sha256sums.txt. No PAT required.
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
