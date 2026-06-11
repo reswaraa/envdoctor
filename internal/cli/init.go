@@ -247,7 +247,7 @@ func renderBootstrap(template, version, repo string, sums platformSHAs) string {
 // this over time with checks/overrides/disables; init only seeds
 // the floor.
 func renderMinimalConfig(version string) string {
-	return fmt.Sprintf(`# .envdoctor.yaml — see https://envdoctor.dev/schema/v1/config
+	return fmt.Sprintf(`# .envdoctor.yaml — see https://reswaraa.github.io/envdoctor/schema/v1/config
 schema_version: 1
 envdoctor:
   min_version: %q
@@ -259,7 +259,7 @@ envdoctor:
 // check type, plus override and disable patterns. Inference-first
 // stays intact — every example is commented out by default.
 func renderCommentedConfig(version string) string {
-	return fmt.Sprintf(`# .envdoctor.yaml — see https://envdoctor.dev/schema/v1/config
+	return fmt.Sprintf(`# .envdoctor.yaml — see https://reswaraa.github.io/envdoctor/schema/v1/config
 #
 # envdoctor infers most checks from the repo's manifest files
 # (package.json, .nvmrc, docker-compose.yml, …). This file lets you
@@ -458,11 +458,11 @@ func printPasteSnippets(w io.Writer, version string, badge bool, repo string) {
 	writeln(w, "─── README snippet (paste under Setup / Contributing) ───")
 	writeln(w, "")
 	if badge {
-		// The badge SVG is served from the envdoctor.dev docs site
-		// (GitHub Pages, no server). The shape is intentionally
-		// generic — a per-repo dynamic badge would need a server,
-		// which the Q9 decision rules out.
-		writef(w, "[![envdoctor scan](https://envdoctor.dev/badge.svg)](https://envdoctor.dev/repo/%s)\n\n", repo)
+		// The badge SVG is served from the docs site (GitHub Pages,
+		// no server). The shape is intentionally generic — a
+		// per-repo dynamic badge would need a server, which the Q9
+		// decision rules out.
+		writef(w, "[![envdoctor scan](https://reswaraa.github.io/envdoctor/badge.svg)](https://reswaraa.github.io/envdoctor/repo/%s)\n\n", repo)
 	}
 	writef(w, `Run ./envdoctor scan before running tests.
 This pins envdoctor %s and verifies the binary by SHA-256 — no

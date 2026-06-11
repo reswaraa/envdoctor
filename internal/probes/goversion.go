@@ -19,7 +19,7 @@ import (
 const (
 	goProbeID  = "go-version"
 	goRecipeID = "go-version-mismatch"
-	goDocURL   = "https://envdoctor.dev/probes/go-version"
+	goDocURL   = "https://reswaraa.github.io/envdoctor/probes/go-version"
 )
 
 // GoVersion mirrors NodeVersion for Go. Inference reads go.mod's `go`

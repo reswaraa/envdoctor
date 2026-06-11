@@ -6,7 +6,10 @@ hero:
   tagline: Diagnose why a cloned repo will not run on your machine. Get copy-pasteable fixes. No telemetry, no accounts, no server.
   actions:
     - text: Install
-      link: /getting-started/install/
+      # Manually prefix the base path (`/envdoctor`) — Starlight's
+      # hero `link:` field does NOT auto-prepend astro.config.mjs's
+      # `base` value.
+      link: /envdoctor/getting-started/install/
       icon: right-arrow
       variant: primary
     - text: GitHub

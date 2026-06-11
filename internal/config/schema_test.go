@@ -12,7 +12,7 @@ import (
 
 // TestPublishedJSONSchemaIsParseable pins three things about the
 // JSON Schema we ship at docs/public/schemas/v1/config.json
-// (served by Astro at the URL https://envdoctor.dev/schemas/v1/config.json):
+// (served by Astro at the URL https://reswaraa.github.io/envdoctor/schemas/v1/config.json):
 //
 //  1. It parses as valid JSON.
 //  2. The $id is the forever-stable URL contract.
@@ -30,7 +30,7 @@ func TestPublishedJSONSchemaIsParseable(t *testing.T) {
 		t.Fatalf("parse schema: %v", err)
 	}
 
-	if id, _ := doc["$id"].(string); id != "https://envdoctor.dev/schemas/v1/config.json" {
+	if id, _ := doc["$id"].(string); id != "https://reswaraa.github.io/envdoctor/schemas/v1/config.json" {
 		t.Errorf("$id changed (forever-stable URL contract); got %q", id)
 	}
 

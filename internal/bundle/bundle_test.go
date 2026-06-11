@@ -34,7 +34,7 @@ func fixedReport() *output.Report {
 				Observed: "18.17.0",
 				Expected: "20.10.0",
 				Evidence: []string{".nvmrc"},
-				DocURL:   "https://envdoctor.dev/probes/node-version",
+				DocURL:   "https://reswaraa.github.io/envdoctor/probes/node-version",
 			},
 		},
 	}

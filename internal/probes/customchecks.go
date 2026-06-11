@@ -19,7 +19,7 @@ import (
 
 const (
 	customProbeID = "custom"
-	customDocURL  = "https://envdoctor.dev/probes/custom"
+	customDocURL  = "https://reswaraa.github.io/envdoctor/probes/custom"
 )
 
 // CustomChecks returns a Probe that interprets .envdoctor.yaml's

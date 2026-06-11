@@ -477,7 +477,7 @@ func TestRunInit_ReadmeBadge_AppendsBadgeToReadmeSnippet(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if strings.Contains(stdout, "envdoctor.dev/badge.svg") {
+	if strings.Contains(stdout, "reswaraa.github.io/envdoctor/badge.svg") {
 		t.Errorf("default snippet must NOT include the badge; got:\n%s", stdout)
 	}
 
@@ -493,7 +493,7 @@ func TestRunInit_ReadmeBadge_AppendsBadgeToReadmeSnippet(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !strings.Contains(stdout, "envdoctor.dev/badge.svg") {
+	if !strings.Contains(stdout, "reswaraa.github.io/envdoctor/badge.svg") {
 		t.Errorf("--readme-badge should append the badge; got:\n%s", stdout)
 	}
 	if !strings.Contains(stdout, "octocat/hello-world") {
@@ -527,7 +527,7 @@ func TestRunInit_AllFlagsTogether(t *testing.T) {
 			t.Errorf("expected %s; %v", want, err)
 		}
 	}
-	if !strings.Contains(stdout, "envdoctor.dev/badge.svg") {
+	if !strings.Contains(stdout, "reswaraa.github.io/envdoctor/badge.svg") {
 		t.Errorf("badge missing from stdout; got:\n%s", stdout)
 	}
 	cfg, _ := os.ReadFile(filepath.Join(dir, ".envdoctor.yaml"))

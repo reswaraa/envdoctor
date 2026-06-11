@@ -8,10 +8,10 @@
 //
 // The authoritative JSON Schema for editor / IDE integration lives at
 // docs/schema/v1/config.json and is published at
-// https://envdoctor.dev/schemas/v1/config.json. Users can add this
+// https://reswaraa.github.io/envdoctor/schemas/v1/config.json. Users can add this
 // header to their .envdoctor.yaml for YAML-language-server hints:
 //
-//	# yaml-language-server: $schema=https://envdoctor.dev/schemas/v1/config.json
+//	# yaml-language-server: $schema=https://reswaraa.github.io/envdoctor/schemas/v1/config.json
 //
 // Adding a new check `type:` is a *minor* schema change (additive);
 // removing or renaming an existing field is *major* and bumps the

@@ -107,7 +107,7 @@ func TestEngine_OrderingByProbeID(t *testing.T) {
 				Severity: output.SeverityWarning,
 				Status:   output.StatusFail,
 				Summary:  "fixture " + id,
-				DocURL:   "https://envdoctor.dev/probes/" + id,
+				DocURL:   "https://reswaraa.github.io/envdoctor/probes/" + id,
 			}},
 		}
 	}

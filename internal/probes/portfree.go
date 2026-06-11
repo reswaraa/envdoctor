@@ -20,7 +20,7 @@ import (
 const (
 	portProbeID  = "port-free"
 	portRecipeID = "port-collision"
-	portDocURL   = "https://envdoctor.dev/probes/port-free"
+	portDocURL   = "https://reswaraa.github.io/envdoctor/probes/port-free"
 )
 
 // PortFree returns the Probe that checks each port declared in

@@ -38,7 +38,7 @@ func TestReport_RoundTrip(t *testing.T) {
 				RecipeID:      "mise-install-node",
 				RecipeClass:   "safe",
 				RecipeCommand: "mise install node@20.10.0",
-				DocURL:        "https://envdoctor.dev/probes/node-version-mismatch",
+				DocURL:        "https://reswaraa.github.io/envdoctor/probes/node-version-mismatch",
 			},
 		},
 	}

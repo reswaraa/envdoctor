@@ -21,7 +21,7 @@ const (
 	dockerProbeID          = "docker-running"
 	dockerCLIMissingRecipe = "docker-cli-missing"
 	dockerDaemonDownRecipe = "docker-daemon-down"
-	dockerDocURL           = "https://envdoctor.dev/probes/docker-running"
+	dockerDocURL           = "https://reswaraa.github.io/envdoctor/probes/docker-running"
 )
 
 // DockerRunning returns the Probe that checks the docker CLI is on

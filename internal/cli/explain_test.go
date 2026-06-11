@@ -33,7 +33,7 @@ func TestExplain_RoundTripsSavedBundle(t *testing.T) {
 				Severity: output.SeverityError,
 				Status:   output.StatusFail,
 				Summary:  "Node 18.17.0 detected; repo requires 20.10.0",
-				DocURL:   "https://envdoctor.dev/probes/node-version",
+				DocURL:   "https://reswaraa.github.io/envdoctor/probes/node-version",
 			},
 		},
 	}
@@ -56,7 +56,7 @@ func TestExplain_RoundTripsSavedBundle(t *testing.T) {
 	for _, want := range []string{
 		"Scanning /repo",
 		"Node 18.17.0",
-		"https://envdoctor.dev/probes/node-version",
+		"https://reswaraa.github.io/envdoctor/probes/node-version",
 	} {
 		if !strings.Contains(stdout.String(), want) {
 			t.Errorf("stdout missing %q; got:\n%s", want, stdout.String())

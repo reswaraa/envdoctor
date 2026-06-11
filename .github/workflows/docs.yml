@@ -1,11 +1,13 @@
 name: docs
 
 # Builds and deploys the Starlight site at docs/ to GitHub Pages.
-# A CNAME file at docs/public/CNAME points envdoctor.dev at the
-# GitHub Pages origin, so the deployed site is served at the
-# stable Probe.DocURL contract URL — every probe emits
-# https://envdoctor.dev/probes/<id> and the doc_url lint test
-# (internal/docslint) keeps each one resolving.
+# Deployed to https://reswaraa.github.io/envdoctor/ — the default
+# Pages URL for this repo. A custom domain (e.g. envdoctor.dev)
+# would be added by writing docs/public/CNAME and registering the
+# domain at the DNS provider; for now the project runs on the free
+# default URL. Every probe emits
+# https://reswaraa.github.io/envdoctor/probes/<id> and the doc_url
+# lint test (internal/docslint) keeps each one resolving.
 #
 # The build step runs the recipe-table drift check before the
 # Astro build: if a contributor changed
@@ -67,6 +69,14 @@ jobs:
       - name: astro build
         working-directory: docs
         run: npm run build
+
+      - name: copy scripts/install.sh into dist
+        # scripts/install.sh is the canonical curl|sh installer.
+        # The repo keeps it under scripts/ for maintainer
+        # discoverability; here we copy it into the built site so
+        # it's reachable at https://reswaraa.github.io/envdoctor/install.sh
+        # — the URL baked into init.go snippets and the README.
+        run: cp scripts/install.sh docs/dist/install.sh
 
       - uses: actions/upload-pages-artifact@v3
         with:

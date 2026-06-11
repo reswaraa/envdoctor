@@ -144,7 +144,7 @@ func runProbe(ctx context.Context, p probes.Probe, in probes.Input) ([]output.Fi
 			Severity: output.SeverityError,
 			Status:   output.StatusProbeFailed,
 			Summary:  fmt.Sprintf("Probe %q failed: %v", p.ID(), runErr),
-			DocURL:   "https://envdoctor.dev/probes/" + p.ID(),
+			DocURL:   "https://reswaraa.github.io/envdoctor/probes/" + p.ID(),
 		}}, true
 	}
 	return findings, false

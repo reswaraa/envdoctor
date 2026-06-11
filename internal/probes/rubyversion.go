@@ -19,7 +19,7 @@ import (
 const (
 	rubyProbeID  = "ruby-version"
 	rubyRecipeID = "ruby-version-mismatch"
-	rubyDocURL   = "https://envdoctor.dev/probes/ruby-version"
+	rubyDocURL   = "https://reswaraa.github.io/envdoctor/probes/ruby-version"
 )
 
 // RubyVersion mirrors NodeVersion for Ruby. Inference from

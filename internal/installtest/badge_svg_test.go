@@ -72,7 +72,7 @@ func TestBadgeSVG_ContainsExpectedText(t *testing.T) {
 
 // TestReadmeBadgeURLContract is the cross-package contract test:
 // internal/cli/init.go's --readme-badge flag prints a snippet
-// referencing https://envdoctor.dev/badge.svg. The docs site
+// referencing https://reswaraa.github.io/envdoctor/badge.svg. The docs site
 // must serve the badge AT that path (i.e. docs/public/badge.svg
 // gets copied verbatim to dist/badge.svg). This test asserts the
 // file exists at the path Astro will copy from.
@@ -84,7 +84,7 @@ func TestBadgeSVG_ContainsExpectedText(t *testing.T) {
 func TestReadmeBadgeURLContract(t *testing.T) {
 	path := findRepoFile(t, filepath.Join("docs", "public", "badge.svg"))
 	if _, err := os.Stat(path); err != nil {
-		t.Fatalf("the --readme-badge flag prints https://envdoctor.dev/badge.svg; "+
+		t.Fatalf("the --readme-badge flag prints https://reswaraa.github.io/envdoctor/badge.svg; "+
 			"docs/public/badge.svg must exist to serve it. got: %v", err)
 	}
 }

@@ -200,7 +200,7 @@ func newWalkFinding(probe, class, command, summary string) output.Finding {
 		RecipeID:      "test-fix",
 		RecipeClass:   class,
 		RecipeCommand: command,
-		DocURL:        "https://envdoctor.dev/probes/" + probe,
+		DocURL:        "https://reswaraa.github.io/envdoctor/probes/" + probe,
 	}
 }
 

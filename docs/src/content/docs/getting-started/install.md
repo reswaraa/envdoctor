@@ -6,7 +6,7 @@ description: Get envdoctor on your PATH in under a minute.
 ## Global install (one machine, all your repos)
 
 ```sh
-curl -fsSL https://envdoctor.dev/install.sh | sh
+curl -fsSL https://reswaraa.github.io/envdoctor/install.sh | sh
 ```
 
 The installer:

@@ -24,7 +24,7 @@ import (
 // constants so the test catches DocURLs declared anywhere in the
 // codebase — including future probes that don't expose theirs
 // through BuiltinProbes.
-var docURLRe = regexp.MustCompile(`"https://envdoctor\.dev/probes/([a-z0-9-]+)"`)
+var docURLRe = regexp.MustCompile(`"https://reswaraa\.github\.io/envdoctor/probes/([a-z0-9-]+)"`)
 
 // TestProbeDocURLsResolveToContent walks every Go source file
 // under internal/probes/ (excluding _test.go), extracts every
@@ -50,7 +50,7 @@ func TestProbeDocURLsResolveToContent(t *testing.T) {
 	for id, sourceFile := range urls {
 		if !pageExists(contentDir, id) {
 			t.Errorf("probe %q (declared in internal/probes/%s) has DocURL\n"+
-				"  https://envdoctor.dev/probes/%s\n"+
+				"  https://reswaraa.github.io/envdoctor/probes/%s\n"+
 				"but no page exists. Expected one of:\n"+
 				"  docs/src/content/docs/probes/%s.md\n"+
 				"  docs/src/content/docs/probes/%s.mdx\n"+
@@ -89,7 +89,7 @@ func TestProbePageMustHaveADeclaringProbe(t *testing.T) {
 		if _, ok := declared[id]; !ok {
 			rel, _ := filepath.Rel(root, p)
 			t.Errorf("docs page %s exists but no probe in internal/probes/ declares DocURL\n"+
-				"  https://envdoctor.dev/probes/%s\n"+
+				"  https://reswaraa.github.io/envdoctor/probes/%s\n"+
 				"Delete the page, or add the DocURL to the corresponding probe.",
 				rel, id)
 		}

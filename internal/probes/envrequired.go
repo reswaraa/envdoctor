@@ -20,7 +20,7 @@ import (
 const (
 	envProbeID  = "env-required"
 	envRecipeID = "env-missing"
-	envDocURL   = "https://envdoctor.dev/probes/env-required"
+	envDocURL   = "https://reswaraa.github.io/envdoctor/probes/env-required"
 )
 
 // EnvRequired returns the Probe that diffs required env vars (from

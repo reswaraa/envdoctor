@@ -19,7 +19,7 @@ import (
 const (
 	pythonProbeID  = "python-version"
 	pythonRecipeID = "python-version-mismatch"
-	pythonDocURL   = "https://envdoctor.dev/probes/python-version"
+	pythonDocURL   = "https://reswaraa.github.io/envdoctor/probes/python-version"
 )
 
 // PythonVersion mirrors NodeVersion for Python: inference from

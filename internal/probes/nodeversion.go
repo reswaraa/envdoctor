@@ -19,7 +19,7 @@ import (
 const (
 	nodeProbeID  = "node-version"
 	nodeRecipeID = "node-version-mismatch"
-	nodeDocURL   = "https://envdoctor.dev/probes/node-version"
+	nodeDocURL   = "https://reswaraa.github.io/envdoctor/probes/node-version"
 )
 
 // NodeVersion returns the Probe that compares the installed Node

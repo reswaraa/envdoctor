@@ -68,7 +68,7 @@ func TestRender_OneFailing_NoColor(t *testing.T) {
 			Evidence:      []string{".nvmrc"},
 			RecipeID:      "mise-install-node",
 			RecipeCommand: "mise install node@20.10.0",
-			DocURL:        "https://envdoctor.dev/probes/node-version-mismatch",
+			DocURL:        "https://reswaraa.github.io/envdoctor/probes/node-version-mismatch",
 		},
 	}
 	var buf bytes.Buffer
@@ -84,7 +84,7 @@ func TestRender_OneFailing_NoColor(t *testing.T) {
 		"    expected: ^20.0.0\n" +
 		"    evidence: .nvmrc\n" +
 		"    fix:      mise install node@20.10.0\n" +
-		"    docs:     https://envdoctor.dev/probes/node-version-mismatch\n" +
+		"    docs:     https://reswaraa.github.io/envdoctor/probes/node-version-mismatch\n" +
 		"\n" +
 		"\n" +
 		"Scan finished in 250ms. 1 error.\n"

@@ -136,6 +136,10 @@ func TestDocsWorkflow_PinsExpectedShape(t *testing.T) {
 		"npm ci",
 		"actions/configure-pages",
 		"npm run build",
+		// install.sh must be copied into dist/ so it's reachable at
+		// https://reswaraa.github.io/envdoctor/install.sh. Without
+		// this the curl|sh URL baked into init.go would 404.
+		"cp scripts/install.sh docs/dist/install.sh",
 		"actions/upload-pages-artifact",
 	}
 	for _, want := range wantBuildFragments {
@@ -148,18 +152,17 @@ func TestDocsWorkflow_PinsExpectedShape(t *testing.T) {
 	}
 }
 
-// TestCNAMEServesEnvdoctorDev confirms docs/public/CNAME contains
-// the literal "envdoctor.dev" — that's what GitHub Pages reads to
-// route the custom domain. The whole Probe.DocURL contract
-// depends on this one line of plain text being correct.
-func TestCNAMEServesEnvdoctorDev(t *testing.T) {
-	path := findRepoFile(t, filepath.Join("docs", "public", "CNAME"))
-	raw, err := os.ReadFile(path)
-	if err != nil {
-		t.Fatalf("read %s: %v", path, err)
-	}
-	got := strings.TrimSpace(string(raw))
-	if got != "envdoctor.dev" {
-		t.Errorf("CNAME: got %q, want %q (matches the Probe.DocURL host contract)", got, "envdoctor.dev")
+// TestNoCNAMEWhileOnDefaultGitHubPagesURL guards the current host
+// decision: we're deploying to https://reswaraa.github.io/envdoctor/
+// (the default GitHub Pages URL for this repo), which does NOT
+// need a CNAME file. A stale CNAME would be silently respected by
+// Pages and break the deploy.
+//
+// When a custom domain is eventually adopted, replace this test
+// with one that asserts CNAME contains the new domain.
+func TestNoCNAMEWhileOnDefaultGitHubPagesURL(t *testing.T) {
+	path := findRepoFile(t, filepath.Join("docs", "public"))
+	if _, err := os.Stat(filepath.Join(path, "CNAME")); err == nil {
+		t.Errorf("docs/public/CNAME exists but the site is on the default reswaraa.github.io URL; delete the file or update this test to match the new domain")
 	}
 }

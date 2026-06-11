@@ -16,7 +16,7 @@ import (
 const (
 	pathProbeID  = "path-command"
 	pathRecipeID = "path-command-missing"
-	pathDocURL   = "https://envdoctor.dev/probes/path-command"
+	pathDocURL   = "https://reswaraa.github.io/envdoctor/probes/path-command"
 )
 
 // PathCommand returns the Probe that flags binaries referenced by

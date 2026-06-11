@@ -17,7 +17,7 @@ import (
 const (
 	archProbeID  = "arch-mismatch"
 	archRecipeID = "native-arm64-missing"
-	archDocURL   = "https://envdoctor.dev/probes/arch-mismatch"
+	archDocURL   = "https://reswaraa.github.io/envdoctor/probes/arch-mismatch"
 )
 
 // x86Issue describes a Node native package that lacked arm64 prebuilts

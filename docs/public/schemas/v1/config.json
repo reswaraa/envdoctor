@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://envdoctor.dev/schemas/v1/config.json",
+  "$id": "https://reswaraa.github.io/envdoctor/schemas/v1/config.json",
   "title": "envdoctor config",
-  "description": "Schema for .envdoctor.yaml — repo-level overrides, additive checks, and disables for envdoctor's inferred check set. See https://envdoctor.dev/config for the human-readable reference.",
+  "description": "Schema for .envdoctor.yaml — repo-level overrides, additive checks, and disables for envdoctor's inferred check set. See https://reswaraa.github.io/envdoctor/config for the human-readable reference.",
   "type": "object",
   "required": ["schema_version"],
   "additionalProperties": false,
@@ -29,7 +29,7 @@
     },
     "overrides": {
       "type": "array",
-      "description": "Modify the parameters of an inferred check without disabling it. Each override targets an inferred check ID (see https://envdoctor.dev/config#inferred-ids).",
+      "description": "Modify the parameters of an inferred check without disabling it. Each override targets an inferred check ID (see https://reswaraa.github.io/envdoctor/config#inferred-ids).",
       "items": { "$ref": "#/$defs/Override" }
     },
     "disable": {

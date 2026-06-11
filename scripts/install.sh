@@ -4,7 +4,7 @@
 #
 # envdoctor installer — usage:
 #
-#   curl -fsSL https://envdoctor.dev/install.sh | sh
+#   curl -fsSL https://reswaraa.github.io/envdoctor/install.sh | sh
 #
 # What it does:
 #   1. Detects OS (darwin|linux) and arch (amd64|arm64).

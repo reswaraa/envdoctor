@@ -23,7 +23,7 @@ The four supported check types:
 | `env_required` | One or more env var names are set in the process env or `.env`. |
 | `command_present` | A command is on PATH. |
 
-See [Config (.envdoctor.yaml)](https://envdoctor.dev/recipes/schema/) for the full reference.
+See [Config (.envdoctor.yaml)](https://reswaraa.github.io/envdoctor/recipes/schema/) for the full reference.
 
 ## How it's detected
 
@@ -41,7 +41,7 @@ The custom probe has no automated recipe — the finding's evidence explains wha
 
 ## Recipes
 
-The custom probe has no automated recipe today. The [Config schema page](https://envdoctor.dev/recipes/schema/) is the primary remediation reference; repository maintainers should document expected setup in their own README.
+The custom probe has no automated recipe today. The [Config schema page](https://reswaraa.github.io/envdoctor/recipes/schema/) is the primary remediation reference; repository maintainers should document expected setup in their own README.
 
 <!-- BEGIN auto-recipes -->
 

@@ -2,13 +2,19 @@
 import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
 
-// Pinned site URL — envdoctor.dev is served via GitHub Pages with
-// a CNAME (docs/public/CNAME). The URL is load-bearing for the
-// Probe.DocURL contract: every probe emits
-// https://envdoctor.dev/probes/<id> and the doc_url lint test
-// (commit 45) verifies each one resolves to a real page here.
+// Site URL: deployed to GitHub Pages at the default project URL,
+// `https://reswaraa.github.io/envdoctor/`. The trailing /envdoctor/
+// path comes from the `base` config below. The URL is load-bearing
+// for the Probe.DocURL contract: every probe emits
+// `https://reswaraa.github.io/envdoctor/probes/<id>` and the
+// doc_url lint test (internal/docslint) verifies each one resolves
+// to a real page here.
+//
+// Custom domain (e.g. envdoctor.dev) is deferred — see the
+// 2026-06-11 entry in implementation.md's decisions log.
 export default defineConfig({
-  site: 'https://envdoctor.dev',
+  site: 'https://reswaraa.github.io',
+  base: '/envdoctor',
   integrations: [
     starlight({
       title: 'envdoctor',
