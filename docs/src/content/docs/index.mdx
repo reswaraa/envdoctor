@@ -1,0 +1,40 @@
+---
+title: envdoctor
+description: Diagnose why a cloned repo will not run on your machine and get copy-pasteable repair commands.
+template: splash
+hero:
+  tagline: Diagnose why a cloned repo will not run on your machine. Get copy-pasteable fixes. No telemetry, no accounts, no server.
+  actions:
+    - text: Install
+      link: /getting-started/install/
+      icon: right-arrow
+      variant: primary
+    - text: GitHub
+      link: https://github.com/reswaraa/envdoctor
+      icon: external
+---
+
+import { Card, CardGrid } from '@astrojs/starlight/components';
+
+## What it does
+
+EnvDoctor scans a repo's manifest files (package.json, .nvmrc, docker-compose.yml, pyproject.toml, ...), probes your local system, and reports findings with the exact commands that fix each one. The wedge user is an OSS contributor who just cloned a stranger's repo and the `dev` command failed.
+
+<CardGrid>
+  <Card title="One command" icon="rocket">
+    `envdoctor scan` runs in under 2 seconds. No daemon, no setup, no login.
+  </Card>
+  <Card title="Inference first" icon="magnifier">
+    Reads the same files you already have. `.envdoctor.yaml` is optional and additive.
+  </Card>
+  <Card title="Consent-gated fixes" icon="approve-check">
+    `envdoctor fix` walks each finding with a `y/n/s/q` prompt. Privileged (sudo) recipes are printed, never executed.
+  </Card>
+  <Card title="Pure OSS" icon="open-book">
+    Apache-2.0. No telemetry. No accounts. The defensibility is a community-grown recipe library.
+  </Card>
+</CardGrid>
+
+## Why it exists
+
+Cloning a stranger's repo is the worst onboarding experience in software. The README is wrong, the Node version is wrong, the docker daemon isn't running, a port is held, half the env vars are missing. Each one costs ten minutes of trial-and-error. EnvDoctor reads what you already have, tells you what's broken, and hands you the fix.
