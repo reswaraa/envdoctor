@@ -18,8 +18,8 @@
 //	go run ./scripts/recipes-to-mdx -check     # CI drift check
 //
 // The -check mode exits non-zero if any file would change. The
-// docs.yml workflow (commit 46) runs `-check` before the build so
-// a YAML library change without a docs regenerate fails CI loudly.
+// docs CI workflow runs `-check` before the build so a YAML library
+// change without a docs regenerate fails CI loudly.
 package main
 
 import (

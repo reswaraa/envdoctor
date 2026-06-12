@@ -34,7 +34,7 @@
     },
     "disable": {
       "type": "array",
-      "description": "Disable an inferred probe entirely (by probe ID such as \"node-version\") or one inferred check (by inferred:probe:source[#key] ID — once Phase 4 commit 28+ stable IDs land).",
+      "description": "Disable an inferred probe entirely (by probe ID such as \"node-version\") or one inferred check (by inferred:probe:source[#key] ID).",
       "items": { "type": "string", "minLength": 1 }
     }
   },

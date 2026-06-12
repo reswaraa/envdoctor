@@ -28,7 +28,7 @@ import (
 
 // SchemaVersion pins the on-wire Bundle shape. Bump only at
 // incompatible changes; readers on the same major must accept the
-// previous version for one release window per Q17.
+// previous version for one release window.
 const SchemaVersion = "1"
 
 // Bundle is the full debug artifact. Report is the canonical scan

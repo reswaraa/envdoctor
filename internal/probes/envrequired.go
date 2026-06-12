@@ -28,9 +28,9 @@ const (
 // the repo's .env file plus the process environment).
 //
 // Only key NAMES are ever recorded in the Finding; values are not read
-// or emitted by this probe. This is a structural-redaction guarantee
-// for the Phase 5 bundle: a buggy probe author cannot accidentally
-// leak an env value here because values are not touched.
+// or emitted by this probe. This is a structural-redaction guarantee:
+// a buggy probe author cannot accidentally leak an env value here
+// because values are never touched.
 func EnvRequired(lib *recipes.Library) Probe {
 	return &envRequiredProbe{
 		lib:        lib,

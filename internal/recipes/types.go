@@ -19,8 +19,8 @@ type Recipe struct {
 
 // Fix is one concrete command, scoped by When and classified by Class.
 //
-// Command is a text/template expression (Phase 2A matcher) with
-// finding-supplied parameters: e.g. "mise install node@{{.Required}}".
+// Command is a text/template expression with finding-supplied
+// parameters: e.g. "mise install node@{{.Required}}".
 // Fallback marks a Fix as a last resort — used only when no other Fix
 // in the same Recipe matches the system.
 type Fix struct {
@@ -33,7 +33,7 @@ type Fix struct {
 	Test     Test   `yaml:"test,omitempty"`
 }
 
-// Class is the safety category controlling `--fix` behavior (Phase 6).
+// Class is the safety category controlling `--fix` behavior.
 type Class string
 
 // Class values. Strings ship in JSON output and in the YAML schema;
@@ -55,9 +55,9 @@ type Match struct {
 	HasTool string `yaml:"has_tool,omitempty"`
 }
 
-// Test is the before/after fixture for the Phase 2C recipe contract
-// harness. Each Fix ships with one; CI runs the recipe twice in a
-// fresh container per Fix and asserts idempotence.
+// Test is the before/after fixture for the recipe contract harness.
+// Each Fix ships with one; CI runs the recipe twice in a fresh
+// container per Fix and asserts idempotence.
 //
 // Setup is an optional bash snippet run before before.check so the
 // recipe can stage the broken state (e.g. create a `.env.example`

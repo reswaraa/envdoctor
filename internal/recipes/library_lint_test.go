@@ -8,8 +8,7 @@ import (
 	"testing"
 )
 
-// TestLibrary_NoFixWrapsSudo enforces the Phase 6 anti-feature:
-// envdoctor never wraps sudo. A non-privileged Fix whose Command
+// TestLibrary_NoFixWrapsSudo enforces that envdoctor never wraps sudo. A non-privileged Fix whose Command
 // begins with `sudo ` is misclassified — either move the Fix to
 // class=privileged (which envdoctor will then print but never
 // execute), or rewrite it to not require sudo at all.

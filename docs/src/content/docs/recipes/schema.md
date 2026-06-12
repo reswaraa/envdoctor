@@ -78,7 +78,7 @@ the corresponding system fact. Empty fields are wildcards.
 
 ## Safety classes
 
-Recipes declare a `class` that controls how the Phase 6 `--fix` command
+Recipes declare a `class` that controls how the `--fix` command
 handles the recipe. The four classes:
 
 | Class | When to use | `--fix` behavior |

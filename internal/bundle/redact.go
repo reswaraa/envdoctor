@@ -38,8 +38,8 @@ type RedactOptions struct {
 //
 // EnvValues / file bodies are NOT touched here: the probe layer is
 // the structural guarantee that those never enter a Finding in the
-// first place (Phase 2 env_required design). This function is the
-// belt-and-suspenders for paths, not values.
+// first place. This function is the belt-and-suspenders for paths,
+// not values.
 func Redact(b *Bundle, opts RedactOptions) {
 	if b == nil || b.Report == nil {
 		return

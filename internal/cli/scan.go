@@ -69,7 +69,7 @@ commands.`,
 // report plus the recipe library hash. Pure of stdout/stderr —
 // emitReport handles output.
 func runScan(ctx context.Context, cwd string, f scanFlags) (*output.Report, string, error) {
-	_ = f.quiet  // reserved for Phase 1; OK findings are not emitted yet.
+	_ = f.quiet  // reserved: OK findings are not emitted yet.
 	_ = f.dryRun // no-op for scan; meaningful for fix.
 
 	repoRoot, err := filepath.Abs(cwd)

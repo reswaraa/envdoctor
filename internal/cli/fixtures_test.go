@@ -22,8 +22,7 @@ import (
 //  1. The expected set of probes applies to each fixture (a structural
 //     property of the fixture, host-independent).
 //  2. Every emitted Finding is well-formed (ID, Probe, Category, and
-//     DocURL set — DocURL becomes a CI-enforced contract once Phase 8
-//     wires the docs-site build).
+//     DocURL set — CI fails the build if any DocURL 404s on the docs site).
 func TestScan_FixtureRepos(t *testing.T) {
 	cases := []struct {
 		name        string

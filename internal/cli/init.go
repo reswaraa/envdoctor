@@ -229,8 +229,7 @@ func scanForInit(ctx context.Context, repoRoot string) (int, error) {
 }
 
 // renderBootstrap performs the placeholder substitution. The set
-// of placeholders is locked by Phase 7 commit 36 / the unit test
-// in bootstrap_template_test.go.
+// of placeholders is tested in bootstrap_template_test.go.
 func renderBootstrap(template, version, repo string, sums platformSHAs) string {
 	return strings.NewReplacer(
 		"__ENVDOCTOR_VERSION__", version,
@@ -460,8 +459,8 @@ func printPasteSnippets(w io.Writer, version string, badge bool, repo string) {
 	if badge {
 		// The badge SVG is served from the docs site (GitHub Pages,
 		// no server). The shape is intentionally generic — a
-		// per-repo dynamic badge would need a server, which the Q9
-		// decision rules out.
+		// per-repo dynamic badge would require a server, which
+		// envdoctor deliberately avoids.
 		writef(w, "[![envdoctor scan](https://reswaraa.github.io/envdoctor/badge.svg)](https://reswaraa.github.io/envdoctor/repo/%s)\n\n", repo)
 	}
 	writef(w, `Run ./envdoctor scan before running tests.

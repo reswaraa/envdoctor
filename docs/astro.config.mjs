@@ -10,8 +10,7 @@ import starlight from '@astrojs/starlight';
 // doc_url lint test (internal/docslint) verifies each one resolves
 // to a real page here.
 //
-// Custom domain (e.g. envdoctor.dev) is deferred — see the
-// 2026-06-11 entry in implementation.md's decisions log.
+// Custom domain (e.g. envdoctor.dev) is deferred.
 export default defineConfig({
   site: 'https://reswaraa.github.io',
   base: '/envdoctor',
@@ -23,8 +22,7 @@ export default defineConfig({
       social: {
         github: 'https://github.com/reswaraa/envdoctor',
       },
-      // Sidebar mirrors the URL contract from
-      // implementation.md Phase 8: /probes/, /recipes/,
+      // Sidebar mirrors the URL structure: /probes/, /recipes/,
       // /checks/, /schema/. Auto-generated within each section
       // so adding a new probe page is just dropping a file.
       sidebar: [

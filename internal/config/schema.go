@@ -20,8 +20,8 @@ package config
 
 // CurrentSchemaVersion is the schema version the loader accepts.
 // Existing configs with this version load cleanly; newer versions
-// are rejected by the loader. When bumped, supported_in_parallel
-// fallback logic must be added to LoadBytes per Q17 versioning.
+// are rejected. When bumped, a parallel-supported fallback must be
+// added to LoadBytes so older configs remain readable for one release.
 const CurrentSchemaVersion = 1
 
 // Config is the parsed `.envdoctor.yaml` document.
@@ -73,8 +73,7 @@ type Check struct {
 // Override modifies an inferred check parameter without disabling
 // inference entirely. ID refers to a stable inferred check identifier
 // of the form "inferred:<probe>:<source>" or
-// "inferred:<probe>:<source>#<key>" (matching what existing probes
-// emit when wired in Phase 4 commit 27).
+// "inferred:<probe>:<source>#<key>".
 type Override struct {
 	ID      string `yaml:"id"`
 	Version string `yaml:"version,omitempty"`

@@ -89,7 +89,7 @@ const (
 
 // Finding is a single result emitted by a probe.
 //
-// DocURL is required; CI in Phase 8 fails the build if any emitted DocURL
+// DocURL is required; CI fails the build if any emitted DocURL
 // 404s on the docs site. RecipeID/RecipeCommand/RecipeClass are populated
 // together when the recipe library has a fix for this finding; absent
 // recipes are not an error, they signal that envdoctor needs a new recipe

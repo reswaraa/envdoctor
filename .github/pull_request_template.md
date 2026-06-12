@@ -3,7 +3,7 @@ Thanks for the PR. Please fill out this template.
 
 If you're adding or changing a recipe in internal/recipes/library/,
 use the recipe template instead — append `?template=recipe.md` to
-the PR URL. The checklist there mirrors the Phase 2C contract.
+the PR URL. The checklist there covers the recipe testing requirements.
 -->
 
 ## Summary

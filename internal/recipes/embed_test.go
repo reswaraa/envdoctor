@@ -188,9 +188,9 @@ func TestLoadFS_MissingRequiredFields(t *testing.T) {
 }
 
 func TestDefaultLibrary_LoadsEmbedded(t *testing.T) {
-	// At Phase 2A there are no real recipes yet; the embedded library
-	// is empty. We only assert that DefaultLibrary returns without
-	// error and that the embed wiring works.
+	// The embedded library may be empty in early builds. We only assert
+	// that DefaultLibrary returns without error and that the embed
+	// wiring works.
 	_, err := DefaultLibrary()
 	if err != nil {
 		t.Fatalf("DefaultLibrary: %v", err)
