@@ -1,0 +1,86 @@
+name: Bug report
+description: Something envdoctor did wrong, crashed on, or got confused by
+title: "[bug]: <one-line summary>"
+labels: ["bug", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for filing a bug. The most useful bug reports include the
+        debug bundle — run `envdoctor scan --bundle ./bundle.json` and attach
+        the resulting file. The bundle is structurally redacted: env values,
+        file contents, hostnames, and absolute paths are stripped before it's
+        written. You can review it with any text editor before sharing.
+
+  - type: input
+    id: version
+    attributes:
+      label: envdoctor version
+      description: Run `envdoctor version`.
+      placeholder: "envdoctor v0.1.0 (commit abc1234, built 2026-06-12)"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: os
+    attributes:
+      label: OS
+      options:
+        - macOS (darwin/arm64)
+        - macOS (darwin/amd64)
+        - Linux (linux/amd64)
+        - Linux (linux/arm64)
+        - Other (note in description)
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: |
+        What did you run, in what kind of repo, and what happened?
+        If you can reproduce on a public repo, please link it — that helps a lot.
+      placeholder: |
+        1. git clone https://github.com/example/some-repo
+        2. cd some-repo
+        3. envdoctor scan
+        4. (envdoctor crashes / wrong finding / etc.)
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect?
+      placeholder: e.g. "Scan should pass — Node 20 is installed and on PATH."
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: What happened instead?
+      description: Paste the scan output, error message, or stack trace.
+      render: shell
+    validations:
+      required: true
+
+  - type: textarea
+    id: bundle
+    attributes:
+      label: Debug bundle
+      description: |
+        Drop `bundle.json` here (drag & drop a file).
+        If the bundle reveals something you'd rather not share publicly,
+        say so and I'll DM you to coordinate.
+
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Sanity check
+      options:
+        - label: I've checked I'm on the latest released envdoctor (`envdoctor upgrade`).
+          required: true
+        - label: I've reviewed the bundle.json above and am OK with its contents being public.
+          required: false

@@ -1,0 +1,99 @@
+name: Recipe request
+description: A probe surfaced a finding with no recipe (exit code 2), or you want an additional tool variant
+title: "[recipe]: <probe-id> needs <tool> recipe"
+labels: ["recipe", "good-first-pr"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Exit code 2 means envdoctor saw a problem it doesn't have a fix for yet.
+        That's the signal the recipe library needs to grow. The most useful
+        recipe requests answer three questions: which probe, which tool, and
+        what's the manual command that actually works today.
+
+        Recipe PRs themselves are great first contributions — see the
+        [recipe PR template](https://github.com/reswaraa/envdoctor/blob/main/.github/PULL_REQUEST_TEMPLATE/recipe.md).
+
+  - type: dropdown
+    id: probe
+    attributes:
+      label: Which probe emitted the no-recipe finding?
+      options:
+        - node-version
+        - python-version
+        - go-version
+        - ruby-version
+        - env-required
+        - port-free
+        - docker-running
+        - path-command
+        - arch-mismatch
+        - custom (.envdoctor.yaml check)
+        - needs a new probe (no current probe covers this)
+    validations:
+      required: true
+
+  - type: input
+    id: tool
+    attributes:
+      label: Tool the recipe should use
+      description: e.g. `volta`, `pyenv-win`, `dnf`, `nix-shell`.
+      placeholder: "volta"
+    validations:
+      required: true
+
+  - type: input
+    id: os
+    attributes:
+      label: OS this applies to
+      placeholder: "darwin / linux / both"
+    validations:
+      required: true
+
+  - type: textarea
+    id: manual-fix
+    attributes:
+      label: What's the manual command that fixes this today?
+      description: |
+        The exact shell command you'd type. Template variables are OK —
+        e.g. `volta install node@{{.Required}}`. The fewer arguments
+        a maintainer has to guess at, the faster the recipe lands.
+      render: shell
+    validations:
+      required: true
+
+  - type: dropdown
+    id: class
+    attributes:
+      label: Suggested safety class
+      description: |
+        - safe: localized, idempotent installs (volta, mise install)
+        - shared: touches global state (brew, apt)
+        - destructive: kills processes, deletes data
+        - privileged: needs sudo
+      options:
+        - safe
+        - shared
+        - destructive
+        - privileged
+        - not sure
+    validations:
+      required: true
+
+  - type: textarea
+    id: detection
+    attributes:
+      label: How would the matcher select this recipe?
+      description: |
+        The `when:` clause needs to be specific enough to apply only when
+        the tool is actually available. What's the `has_tool: <…>` value?
+        Anything else (OS, distro)?
+      placeholder: |
+        when:
+          has_tool: volta
+
+  - type: textarea
+    id: extra
+    attributes:
+      label: Anything else?
+      description: Repro link, scan output, screenshot, etc.
