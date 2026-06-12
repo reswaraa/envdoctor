@@ -302,9 +302,9 @@ func shortHash(h string) string {
 }
 
 // repairOrder maps probe IDs to a priority bucket used to sort
-// findings before walking them. The contract (implementation.md
-// Phase 6): runtime versions → port collisions → docker state →
-// everything else. Unknown probe IDs land in bucket 3.
+// findings before walking them. Priority order: runtime versions ->
+// port collisions -> docker state -> everything else.
+// Unknown probe IDs land in bucket 3.
 var repairOrder = map[string]int{
 	"node-version":   0,
 	"python-version": 0,

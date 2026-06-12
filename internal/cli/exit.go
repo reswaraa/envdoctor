@@ -9,7 +9,7 @@ import (
 	"github.com/reswaraa/envdoctor/internal/output"
 )
 
-// Process exit codes. Matches the matrix from implementation.md Q10.
+// Process exit codes.
 const (
 	ExitOK               = 0
 	ExitRepairable       = 1

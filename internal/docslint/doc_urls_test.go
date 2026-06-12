@@ -31,11 +31,10 @@ var docURLRe = regexp.MustCompile(`"https://reswaraa\.github\.io/envdoctor/probe
 // probe DocURL it finds, and asserts each one resolves to a real
 // page under docs/src/content/docs/probes/.
 //
-// This is the Phase 8 doc_url lint test — the spec from
-// implementation.md says CI must fail when a probe ships without
-// a docs page. Running through `go test ./...` rather than as a
-// separate command means the gate is on every contributor's
-// pre-commit + every CI run, not just the docs CI.
+// Every probe must ship with a docs page — CI fails if one is missing.
+// Running through `go test ./...` rather than as a separate command
+// means the gate fires on every contributor's pre-commit and every CI
+// run, not just the docs CI.
 func TestProbeDocURLsResolveToContent(t *testing.T) {
 	root := repoRoot(t)
 	probesDir := filepath.Join(root, "internal", "probes")

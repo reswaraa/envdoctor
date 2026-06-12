@@ -2,9 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // Package config parses, validates, and represents the repo-level
-// .envdoctor.yaml file. The schema is the typed-list discriminator
-// shape from implementation.md Q12: every Check carries a `type:` that
-// determines which other fields are meaningful.
+// .envdoctor.yaml file. The schema uses a typed-list discriminator:
+// every Check carries a `type:` field that determines which other
+// fields are meaningful.
 //
 // The authoritative JSON Schema for editor / IDE integration lives at
 // docs/schema/v1/config.json and is published at
