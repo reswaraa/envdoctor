@@ -24,8 +24,8 @@ on a higher cadence than the rest of the codebase.
 
 ## [0.1.0] — 2026-06-12
 
-First public release. The wedge user is an OSS contributor who just cloned
-a stranger's repo and the dev command failed.
+First public release. Built for OSS contributors who clone a repo and
+find that the dev command fails on their machine.
 
 ### Added
 

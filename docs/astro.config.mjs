@@ -4,11 +4,13 @@ import starlight from '@astrojs/starlight';
 
 // Site URL: deployed to GitHub Pages at the default project URL,
 // `https://reswaraa.github.io/envdoctor/`. The trailing /envdoctor/
-// path comes from the `base` config below. The URL is load-bearing
-// for the Probe.DocURL contract: every probe emits
-// `https://reswaraa.github.io/envdoctor/probes/<id>` and the
-// doc_url lint test (internal/docslint) verifies each one resolves
-// to a real page here.
+// path comes from the `base` config below.
+//
+// Do not change this URL without also updating every probe's DocURL
+// constant: each probe hard-codes a URL of the form
+// `https://reswaraa.github.io/envdoctor/probes/<id>` that points to
+// its documentation page. The doc_url lint test (internal/docslint)
+// fails the build if any of those URLs 404 here.
 //
 // Custom domain (e.g. envdoctor.dev) is deferred.
 export default defineConfig({

@@ -79,7 +79,7 @@ See [`CONTRIBUTING.md`](./CONTRIBUTING.md) for the full anti-features list.
 
 ## Contributing recipes
 
-The defensibility play is a community-grown recipe library. Every recipe
+The heart of envdoctor is a community-grown recipe library. Every recipe
 ships with a `test:` block run twice in a fresh container: once to confirm
 the broken state, and once after the fix to confirm repair. PRs that add a recipe
 should follow the
