@@ -21,7 +21,7 @@ import (
 // interprets them. cfg.Disable filtering is applied to findings at
 // the scan layer, not here.
 //
-// New probes register here. The slice's order is not load-bearing
+// New probes register here. The slice's order does not affect output
 // (the engine sorts findings by probe ID at output time), but keeping
 // it stable makes diffs easier to read.
 func BuiltinProbes(lib *recipes.Library, cfg *config.Config) []probes.Probe {

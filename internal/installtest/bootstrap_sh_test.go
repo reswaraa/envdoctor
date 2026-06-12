@@ -48,7 +48,7 @@ func renderedBootstrap(t *testing.T, baseURL, sumDarwinArm, sumDarwinAmd, sumLin
 	out := rep.Replace(string(raw))
 	// Set ENVDOCTOR_BASE_URL from the test by writing an override
 	// near the top — easier than threading env through exec since
-	// it's already a documented test seam in the template.
+	// the template already exposes this variable for test overrides.
 	out = strings.Replace(out,
 		`ENVDOCTOR_BASE_URL="${ENVDOCTOR_BASE_URL:-https://github.com}"`,
 		fmt.Sprintf(`ENVDOCTOR_BASE_URL="%s"`, baseURL),

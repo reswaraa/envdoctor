@@ -24,8 +24,8 @@ import (
 )
 
 // tagResolver resolves the "latest" GitHub release for a repo to
-// its tag string. Production wires fetchLatestTagFromGitHub; tests
-// inject a stub returning a canned tag.
+// its tag string. In production this calls fetchLatestTagFromGitHub;
+// tests pass a stub that returns a fixed tag without hitting the network.
 type tagResolver func(ctx context.Context, repo string) (string, error)
 
 // binaryDownloader fetches the platform-specific release tarball

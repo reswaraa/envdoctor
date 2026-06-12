@@ -32,9 +32,9 @@ const (
 	AnswerQuit
 )
 
-// Prompter is the test seam for `envdoctor fix`'s consent UX. The
+// Prompter is the interface for `envdoctor fix`'s consent UX. The
 // production implementation reads a line from stdin and writes the
-// prompt to stdout (ttyPrompter); tests inject a scripted prompter.
+// prompt to stdout (ttyPrompter); tests supply a scripted version.
 type Prompter interface {
 	Confirm(prompt string, defaultYes bool) (Answer, error)
 }
@@ -108,10 +108,10 @@ type RunResult struct {
 	StderrTail string
 }
 
-// Runner is the test seam for executing a fix command. The
+// Runner is the interface for executing a fix command. The
 // production implementation invokes `bash -c <command>`; tests
-// inject a scripted runner that records calls and returns canned
-// exit codes.
+// supply a scripted version that records calls and returns fixed
+// exit codes without running real shell commands.
 type Runner interface {
 	Run(ctx context.Context, command string) (RunResult, error)
 }

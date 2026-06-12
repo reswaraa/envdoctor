@@ -136,15 +136,15 @@ type walkInput struct {
 	runner         Runner
 	recipeHash     string
 
-	// appendAudit is invoked once per executed fix. Production wires
-	// this to audit.Append (writes to ~/.local/state/...); tests
-	// inject a no-op so they don't write the user's real log.
+	// appendAudit is invoked once per executed fix. In production this
+	// is audit.Append (writes to ~/.local/state/...); tests pass a
+	// no-op so they don't touch the user's real audit log.
 	appendAudit func(audit.Entry) error
 
 	// reprobeCheck is called after each successful fix to determine
-	// whether the original finding cleared. Production wires this to
-	// a closure over (lib, cfg, repoRoot, facts) that re-runs the
-	// single matching probe; tests inject a constant.
+	// whether the original finding cleared. In production this re-runs
+	// the single matching probe; tests pass a constant to avoid running
+	// real probes.
 	reprobeCheck func(ctx context.Context, probeID, originalSummary string) bool
 }
 
@@ -338,7 +338,7 @@ func sortRepair(findings []output.Finding) []output.Finding {
 // reports whether the Summary still appears among the new
 // findings. The factory shape lets walkInput hold a small
 // function value rather than carrying lib/cfg/facts/repoRoot
-// through the test seam.
+// through the reprobeCheck function.
 //
 // Re-running one probe (not the whole engine) keeps the post-fix
 // check sub-millisecond. Matching by Summary works for every

@@ -48,8 +48,8 @@ type platformSHAs struct {
 }
 
 // sumFetcher resolves the four-platform SHA-256 digest set for a
-// given version tag. Production wires this to fetchSumsFromGitHub;
-// tests inject a stub so they don't touch the network.
+// given version tag. In production this calls fetchSumsFromGitHub;
+// tests pass a stub so they don't touch the network.
 type sumFetcher func(ctx context.Context, repo, version string) (platformSHAs, error)
 
 type initOpts struct {

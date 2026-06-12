@@ -2,10 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // Package recipes loads, validates, and matches the YAML recipe library
-// that ships embedded in the binary. The recipe library is the
-// defensibility play: a large, well-tested set of repair commands for
-// every (probe, os, tool) combination an envdoctor user is likely to
-// hit.
+// that ships embedded in the binary. The value of envdoctor grows with
+// this library: a large, well-tested set of repair commands covering
+// every (probe, os, tool) combination contributors are likely to hit.
 package recipes
 
 // Recipe is one logical group of repair commands addressing the same

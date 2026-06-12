@@ -58,7 +58,7 @@ commands.`,
 		},
 	}
 	cmd.Flags().BoolVar(&f.jsonOut, "json", false, "emit JSON to stdout instead of the pretty TTY view")
-	cmd.Flags().BoolVar(&f.quiet, "quiet", false, "(reserved) hide non-failing findings")
+	cmd.Flags().BoolVar(&f.quiet, "quiet", false, "not yet active; will suppress passing findings once implemented")
 	cmd.Flags().StringVar(&f.bundle, "bundle", "", "write a shareable debug bundle to PATH")
 	cmd.Flags().BoolVar(&f.bundleIncludePaths, "bundle-include-paths", false, "keep absolute paths verbatim in the bundle (default: redact $HOME → ~ and RepoRoot → basename)")
 	cmd.Flags().BoolVar(&f.dryRun, "dry-run", false, "no-op for scan; honored by `envdoctor fix`")

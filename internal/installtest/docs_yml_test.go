@@ -57,8 +57,7 @@ func TestDocsWorkflow_ParsesAsYAML(t *testing.T) {
 	}
 }
 
-// TestDocsWorkflow_PinsExpectedShape locks the load-bearing
-// pieces:
+// TestDocsWorkflow_PinsExpectedShape asserts the critical pieces:
 //
 //   - Triggers on push to main + workflow_dispatch.
 //   - permissions.pages == write + permissions.id-token == write

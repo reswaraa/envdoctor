@@ -60,9 +60,9 @@ func TestReleaseWorkflow_ParsesAsYAML(t *testing.T) {
 	}
 }
 
-// TestReleaseWorkflow_PinsExpectedShape asserts the load-bearing
-// pieces: tag-only trigger, contents:write permission (GoReleaser
-// needs it to push the release), and the four expected steps
+// TestReleaseWorkflow_PinsExpectedShape asserts the critical pieces:
+// tag-only trigger, contents:write permission (GoReleaser needs it
+// to push the release), and the four expected steps
 // (checkout, setup-go, test, goreleaser).
 //
 // Intentionally NOT asserting exact action versions — those move
