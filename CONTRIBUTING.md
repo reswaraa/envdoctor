@@ -47,12 +47,18 @@ Every probe is three artifacts in one PR:
 1. **Code** under `internal/probes/<id>.go` implementing the `Probe`
    interface, plus inference (under `internal/inference/`) if the probe
    reads new manifest files.
-2. **Tests** under `internal/probes/<id>_test.go`. At least one happy-path
-   integration test and two failure-mode tests. **No mocks of OS state** —
-   use a container fixture from `testdata/containers/`. Mocked probes pass
-   while reality breaks.
-3. **Docs** under `docs/probes/<id>.md` following the per-probe template.
-   The CI docs build fails if any emitted `Finding.doc_url` 404s.
+2. **Tests** at the probe level, typically `internal/probes/<id>_test.go`,
+   though closely related probes can share a file (e.g. python / go / ruby
+   currently live in `languageversion_test.go`). At least one happy-path
+   integration test and two failure-mode tests per probe. **No mocks of OS
+   state**, use a container fixture from `testdata/containers/`. Mocked
+   probes pass while reality breaks.
+3. **Docs** under `docs/src/content/docs/probes/<id>.md` following the
+   per-probe template (probe ID + category + severity + inferred-from
+   table; what-it-means / how-it's-detected / common-causes prose; the
+   auto-generated recipe table between the
+   `<!-- BEGIN auto-recipes -->` markers). The doc_url lint in
+   `internal/docslint` fails the build if a probe ships without a page.
 
 Probe IDs are kebab-case and forever. If semantics change, deprecate and
 add a new ID.
@@ -84,8 +90,21 @@ Schema changes that are _additive_ (new optional fields, new check `type:`)
 ship in a minor version without bumping `schema_version`. Schema changes
 that break parsing of existing configs bump `schema_version` (e.g. `1` to
 `2`), supported in parallel for one major version. Both cases require
-updating the JSON Schema in `internal/config/json_schema.go` and the doc
-page under `docs/schema/`.
+updating:
+
+- The Go types in `internal/config/schema.go` (loader + validators).
+- The authoritative JSON Schema at `docs/public/schemas/v1/config.json`
+  (Astro serves this verbatim at
+  `https://reswaraa.github.io/envdoctor/schemas/v1/config.json`, the URL
+  baked into the schema's `$id` field, editors fetch it from there for
+  autocomplete).
+- The human-readable reference page at
+  `docs/src/content/docs/checks/index.md`.
+
+`TestPublishedJSONSchemaIsParseable` enforces that the Go check-type
+constants stay in lockstep with the JSON Schema's `type:` enum. If you add
+a constant without updating the schema (or vice versa), the test fails
+loudly.
 
 ## Code style
 
